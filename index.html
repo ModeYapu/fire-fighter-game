@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消防灭火策略游戏</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- 游戏画布 -->
+        <canvas id="game-canvas" width="800" height="600"></canvas>
+
+        <!-- 顶部HUD -->
+        <div id="top-hud" class="hud-panel" style="display: none;">
+            <div class="hud-item">
+                <span class="hud-label">时间</span>
+                <span class="hud-value" id="time-display">00:00</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">水量</span>
+                <span class="hud-value" id="water-display">1000</span>
+            </div>
+            <div class="hud-item">
+                <span class="hud-label">得分</span>
+                <span class="hud-value" id="score-display">0</span>
+            </div>
+        </div>
+
+        <!-- 底部控制条 -->
+        <div id="bottom-hud" class="hud-panel" style="display: none;">
+            <div class="control-item">
+                <span class="hud-label">角度</span>
+                <div class="control-bar">
+                    <div class="control-fill" id="angle-fill" style="width: 45%;"></div>
+                </div>
+                <span class="hud-value" id="angle-display" style="font-size: 16px;">45°</span>
+            </div>
+            <div class="control-item">
+                <span class="hud-label">力度</span>
+                <div class="control-bar">
+                    <div class="control-fill" id="power-fill" style="width: 50%;"></div>
+                </div>
+                <span class="hud-value" id="power-display" style="font-size: 16px;">50%</span>
+            </div>
+        </div>
+
+        <!-- 设施侧边栏 -->
+        <div id="sidebar" class="hud-panel" style="display: none;">
+            <button class="facility-btn" data-facility="hydrant">
+                <div class="facility-icon">💧</div>
+                <div class="facility-name">消防栓</div>
+                <div class="facility-cost">50分</div>
+            </button>
+            <button class="facility-btn" data-facility="firewall">
+                <div class="facility-icon">🧱</div>
+                <div class="facility-name">防火墙</div>
+                <div class="facility-cost">80分</div>
+            </button>
+            <button class="facility-btn" data-facility="fighter">
+                <div class="facility-icon">👨‍🚒</div>
+                <div class="facility-name">消防员</div>
+                <div class="facility-cost">100分</div>
+            </button>
+        </div>
+
+        <!-- 准备阶段提示 -->
+        <div id="prepare-message" style="display: none;">放置防御设施</div>
+        <div id="prepare-timer" style="display: none;">30</div>
+
+        <!-- 主菜单 -->
+        <div id="main-menu" class="menu-overlay">
+            <div class="menu-title">🔥 消防灭火 🔥</div>
+            <div class="menu-subtitle">策略灭火游戏</div>
+            <div class="menu-buttons">
+                <button class="menu-btn" id="btn-play">开始游戏</button>
+                <button class="menu-btn secondary" id="btn-levels">选择关卡</button>
+            </div>
+        </div>
+
+        <!-- 关卡选择 -->
+        <div id="level-menu" class="menu-overlay" style="display: none;">
+            <div class="menu-title">选择关卡</div>
+            <div id="level-grid"></div>
+            <button class="menu-btn secondary" id="btn-back">返回</button>
+        </div>
+
+        <!-- 结果界面 -->
+        <div id="result-menu" class="menu-overlay" style="display: none;">
+            <div class="result-title" id="result-title">胜利!</div>
+            <div class="result-stars" id="result-stars">⭐⭐⭐</div>
+            <div class="result-stats">
+                <div class="result-stat">得分: <span id="result-score">0</span></div>
+                <div class="result-stat">剩余水量: <span id="result-water">0</span></div>
+                <div class="result-stat">保存建筑: <span id="result-buildings">0</span></div>
+            </div>
+            <div class="menu-buttons">
+                <button class="menu-btn" id="btn-retry">重试</button>
+                <button class="menu-btn secondary" id="btn-next">下一关</button>
+                <button class="menu-btn secondary" id="btn-menu">主菜单</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏脚本 -->
+    <script src="js/constants.js"></script>
+    <script src="js/physics.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/water.js"></script>
+    <script src="js/fire.js"></script>
+    <script src="js/building.js"></script>
+    <script src="js/facility.js"></script>
+    <script src="js/resources.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/levels.js"></script>
+    <script src="js/strategy.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/game.js"></script>
+
+    <script>
+        // 游戏入口
+        window.onload = function() {
+            const game = new Game();
+            game.init();
+        };
+    </script>
+</body>
+</html>
