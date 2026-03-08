@@ -102,27 +102,7 @@
         </div>
     </div>
 
-    <!-- 游戏脚本 -->
-    <script src="js/constants.js"></script>
-    <script src="js/physics.js"></script>
-    <script src="js/particles.js"></script>
-    <script src="js/water.js"></script>
-    <script src="js/fire.js"></script>
-    <script src="js/building.js"></script>
-    <script src="js/facility.js"></script>
-    <script src="js/resources.js"></script>
-    <script src="js/input.js"></script>
-    <script src="js/levels.js"></script>
-    <script src="js/strategy.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/game.js"></script>
-
-    <script>
-        // 游戏入口
-        window.onload = function() {
-            const game = new Game();
-            game.init();
-        };
-    </script>
+    <!-- 游戏脚本 (ES Modules) -->
+    <script type="module" src="src/main.js"></script>
 </body>
 </html>
