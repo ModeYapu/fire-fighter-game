@@ -78,6 +78,16 @@ export class UIManager {
             this.showMainMenu();
         });
 
+        // 跳过准备阶段按钮
+        const btnSkip = document.getElementById('btn-skip');
+        if (btnSkip) {
+            btnSkip.addEventListener('click', () => {
+                if (this.game.state === GAME_STATE.PREPARE) {
+                    this.game.startBattle();
+                }
+            });
+        }
+
         // 设施按钮
         document.querySelectorAll('.facility-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -157,10 +167,25 @@ export class UIManager {
         this.elements.bottomHud.style.display = 'flex';
         this.elements.sidebar.style.display = 'flex';
 
+        // 移动端控制按钮 - 使用更可靠的检测方式
+        const mobileControls = document.getElementById('mobile-controls');
+        if (mobileControls && this.isMobileDevice()) {
+            mobileControls.style.display = 'flex';
+        }
+
         if (this.game.state === GAME_STATE.PREPARE) {
             this.elements.prepareMessage.style.display = 'block';
             this.elements.prepareTimer.style.display = 'block';
         }
+    }
+
+    isMobileDevice() {
+        // 检测触摸设备和移动设备
+        return (
+            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+            ('ontouchstart' in window) ||
+            (navigator.maxTouchPoints > 0)
+        );
     }
 
     hideGameUI() {
@@ -169,6 +194,11 @@ export class UIManager {
         this.elements.sidebar.style.display = 'none';
         this.elements.prepareMessage.style.display = 'none';
         this.elements.prepareTimer.style.display = 'none';
+
+        const mobileControls = document.getElementById('mobile-controls');
+        if (mobileControls) {
+            mobileControls.style.display = 'none';
+        }
     }
 
     updateHUD(time, water, score, angle, power) {

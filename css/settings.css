@@ -1,0 +1,426 @@
+/* ==================== 设置菜单样式 ==================== */
+
+.settings-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.settings-title {
+    color: #3498db;
+    font-size: 18px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(52, 152, 219, 0.3);
+}
+
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-row:last-child {
+    border-bottom: none;
+}
+
+.settings-label {
+    color: #ecf0f1;
+    font-size: 14px;
+}
+
+/* 滑块样式 */
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.settings-slider {
+    width: 150px;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.settings-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3498db;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.settings-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    background: #2980b9;
+}
+
+.settings-value {
+    color: #fff;
+    font-size: 13px;
+    min-width: 45px;
+    text-align: right;
+}
+
+/* 开关样式 */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    transition: 0.3s;
+    border-radius: 26px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #27ae60;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
+/* 下拉选择框样式 */
+.settings-select {
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+    min-width: 120px;
+}
+
+.settings-select option {
+    background: #2c3e50;
+    color: #fff;
+}
+
+.settings-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.reset-btn {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: #fff;
+}
+
+.reset-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
+/* ==================== 每日挑战样式 ==================== */
+
+.daily-challenge-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.daily-challenge-card.completed {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+}
+
+.daily-challenge-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.challenge-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.challenge-icon {
+    font-size: 48px;
+}
+
+.challenge-info {
+    flex: 1;
+}
+
+.challenge-name {
+    font-size: 22px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.challenge-level {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.challenge-description {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.challenge-progress {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #fff;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+}
+
+.challenge-reward {
+    display: flex;
+    justify-content: space-around;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.reward-item {
+    text-align: center;
+}
+
+.reward-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.reward-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #FFD700;
+}
+
+.reward-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.challenge-actions {
+    margin-top: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.start-challenge-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #667eea;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.start-challenge-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.start-challenge-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.challenge-complete-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #FFD700;
+    color: #2c3e50;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 2;
+}
+
+/* 历史记录 */
+.challenge-history {
+    margin-top: 20px;
+}
+
+.history-title {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.history-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-date {
+    color: #95a5a6;
+    font-size: 12px;
+}
+
+.history-name {
+    color: #fff;
+    font-size: 14px;
+}
+
+.history-reward {
+    color: #FFD700;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* ==================== 辅助功能样式 ==================== */
+
+/* 色盲模式 */
+.color-blind-mode .fire-icon {
+    color: #FF6B6B !important;
+}
+
+.color-blind-mode .water-icon {
+    color: #4ECDC4 !important;
+}
+
+.color-blind-mode .success-icon {
+    color: #95E1D3 !important;
+}
+
+/* 大字体模式 */
+.large-text {
+    font-size: 120%;
+}
+
+.large-text .menu-btn {
+    font-size: 16px;
+}
+
+.large-text .settings-label {
+    font-size: 16px;
+}
+
+.large-text .hud-value {
+    font-size: 20px;
+}
+
+/* 减少动画 */
+.reduced-motion * {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* ==================== 响应式调整 ==================== */
+
+@media (max-width: 768px) {
+    .settings-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .settings-slider {
+        width: 100%;
+    }
+    
+    .challenge-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .challenge-reward {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

@@ -1,23 +1,29 @@
-import { FIRE_CONFIG, LEVEL_DATA, COLORS } from '../utils/constants.js';
+/**
+ * Fire - 火焰系统
+ * 管理火焰的创建、蔓延和渲染
+ */
+import { FIRE_CONFIG, COLORS } from '../utils/constants.js';
 
 export class Fire {
     constructor(building) {
         this.building = building;
         this.x = building.x + building.width / 2;
-        this.y = building.y + building.height / 2;
+        this.y = building.y + building.height / 3; // 火焰在建筑顶部
         this.intensity = 1;
-        this.radius = 30;
+        this.radius = 40;
         this.spreadTimer = 0;
+        this.flickerOffset = 0;
     }
 
     update(game) {
         if (this.intensity <= 0) return;
 
-        // 更新半径
-        this.radius = 20 + this.intensity * 10;
+        // 更新半径（更大更明显）
+        this.radius = 35 + this.intensity * 15;
 
         // 对建筑造成伤害
         this.building.health -= FIRE_CONFIG.DAMAGE_RATE * this.intensity;
+        this.building.burning = true;
 
         // 火焰蔓延逻辑
         this.spreadTimer++;
@@ -26,15 +32,18 @@ export class Fire {
             this.trySpread(game);
         }
 
-        // 生成火焰粒子
-        for (let i = 0; i < this.intensity; i++) {
+        // 生成更多火焰粒子
+        for (let i = 0; i < this.intensity * 2; i++) {
             game.particles.createFire(this.x, this.y, this.intensity);
         }
 
         // 生成烟雾粒子
-        if (Math.random() < 0.3) {
-            game.particles.createSmoke(this.x, this.y - 20);
+        if (Math.random() < 0.5) {
+            game.particles.createSmoke(this.x, this.y - 30);
         }
+
+        // 火焰闪烁效果
+        this.flickerOffset = Math.random() * 5;
     }
 
     trySpread(game) {
@@ -53,7 +62,7 @@ export class Fire {
             const distance = Math.sqrt(dx * dx + dy * dy);
 
             // 如果距离足够近，有概率点燃
-            if (distance < this.radius + 50) {
+            if (distance < this.radius + 80) {
                 const probability = FIRE_CONFIG.SPREAD_PROBABILITY * this.intensity * (1 - building.fireResistance);
 
                 if (Math.random() < probability) {
@@ -67,6 +76,7 @@ export class Fire {
         this.intensity -= amount;
         if (this.intensity <= 0) {
             this.intensity = 0;
+            this.building.burning = false;
         }
     }
 }
@@ -107,18 +117,49 @@ export class FireSystem {
         this.fires.forEach(fire => {
             if (fire.intensity <= 0) return;
 
-            // 绘制火焰光晕
-            const gradient = ctx.createRadialGradient(
-                fire.x, fire.y, 0,
-                fire.x, fire.y, fire.radius
-            );
-            gradient.addColorStop(0, COLORS.FIRE_GLOW);
+            const x = fire.x;
+            const y = fire.y;
+            const r = fire.radius + fire.flickerOffset;
+
+            // 绘制火焰外层光晕（更大范围）
+            const outerGlow = ctx.createRadialGradient(x, y, 0, x, y, r * 2);
+            outerGlow.addColorStop(0, 'rgba(255, 100, 0, 0.5)');
+            outerGlow.addColorStop(0.5, 'rgba(255, 50, 0, 0.3)');
+            outerGlow.addColorStop(1, 'transparent');
+
+            ctx.beginPath();
+            ctx.arc(x, y, r * 2, 0, Math.PI * 2);
+            ctx.fillStyle = outerGlow;
+            ctx.fill();
+
+            // 绘制火焰主体光晕
+            const gradient = ctx.createRadialGradient(x, y, 0, x, y, r * 1.2);
+            gradient.addColorStop(0, 'rgba(255, 200, 0, 0.9)');
+            gradient.addColorStop(0.3, 'rgba(255, 100, 0, 0.7)');
+            gradient.addColorStop(0.7, 'rgba(255, 50, 0, 0.4)');
             gradient.addColorStop(1, 'transparent');
 
             ctx.beginPath();
-            ctx.arc(fire.x, fire.y, fire.radius, 0, Math.PI * 2);
+            ctx.arc(x, y, r * 1.2, 0, Math.PI * 2);
             ctx.fillStyle = gradient;
             ctx.fill();
+
+            // 绘制火焰核心（更亮）
+            const coreGradient = ctx.createRadialGradient(x, y - 15, 0, x, y - 15, r * 0.6);
+            coreGradient.addColorStop(0, 'rgba(255, 255, 200, 1)');
+            coreGradient.addColorStop(0.5, 'rgba(255, 200, 0, 0.7)');
+            coreGradient.addColorStop(1, 'transparent');
+
+            ctx.beginPath();
+            ctx.arc(x, y - 15, r * 0.6, 0, Math.PI * 2);
+            ctx.fillStyle = coreGradient;
+            ctx.fill();
+
+            // 绘制火焰图标（醒目）- 更大
+            ctx.font = `${50 + fire.intensity * 8}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🔥', x, y);
         });
     }
 

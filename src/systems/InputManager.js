@@ -37,6 +37,98 @@ export class InputManager {
 
         // 设施放置
         this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
+
+        // 移动端控制按钮
+        this.setupMobileControls();
+    }
+
+    setupMobileControls() {
+        const mobileControls = document.getElementById('mobile-controls');
+        if (!mobileControls) return;
+
+        // 移动设备检测 - 与 UIManager 保持一致
+        const isMobile = this.isMobileDevice();
+
+        // 注意：不在这里设置 display，由 UIManager.showGameUI() 统一控制
+        // 这里只设置事件监听器
+
+        // 角度控制
+        const btnUp = document.getElementById('btn-up');
+        const btnDown = document.getElementById('btn-down');
+        const btnLeft = document.getElementById('btn-left');
+        const btnRight = document.getElementById('btn-right');
+        const btnFire = document.getElementById('btn-fire');
+
+        // 触摸开始
+        btnUp?.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.keys['ArrowUp'] = true;
+        });
+        btnDown?.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.keys['ArrowDown'] = true;
+        });
+        btnLeft?.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.keys['ArrowLeft'] = true;
+        });
+        btnRight?.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.keys['ArrowRight'] = true;
+        });
+        btnFire?.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.isShooting = true;
+        });
+
+        // 触摸结束
+        btnUp?.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.keys['ArrowUp'] = false;
+        });
+        btnDown?.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.keys['ArrowDown'] = false;
+        });
+        btnLeft?.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.keys['ArrowLeft'] = false;
+        });
+        btnRight?.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.keys['ArrowRight'] = false;
+        });
+        btnFire?.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.isShooting = false;
+        });
+
+        // 鼠标点击（桌面端调试用）
+        btnUp?.addEventListener('mousedown', () => this.keys['ArrowUp'] = true);
+        btnDown?.addEventListener('mousedown', () => this.keys['ArrowDown'] = true);
+        btnLeft?.addEventListener('mousedown', () => this.keys['ArrowLeft'] = true);
+        btnRight?.addEventListener('mousedown', () => this.keys['ArrowRight'] = true);
+        btnFire?.addEventListener('mousedown', () => this.isShooting = true);
+
+        btnUp?.addEventListener('mouseup', () => this.keys['ArrowUp'] = false);
+        btnDown?.addEventListener('mouseup', () => this.keys['ArrowDown'] = false);
+        btnLeft?.addEventListener('mouseup', () => this.keys['ArrowLeft'] = false);
+        btnRight?.addEventListener('mouseup', () => this.keys['ArrowRight'] = false);
+        btnFire?.addEventListener('mouseup', () => this.isShooting = false);
+
+        btnUp?.addEventListener('mouseleave', () => this.keys['ArrowUp'] = false);
+        btnDown?.addEventListener('mouseleave', () => this.keys['ArrowDown'] = false);
+        btnLeft?.addEventListener('mouseleave', () => this.keys['ArrowLeft'] = false);
+        btnRight?.addEventListener('mouseleave', () => this.keys['ArrowRight'] = false);
+        btnFire?.addEventListener('mouseleave', () => this.isShooting = false);
+    }
+
+    isMobileDevice() {
+        return (
+            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+            ('ontouchstart' in window) ||
+            (navigator.maxTouchPoints > 0)
+        );
     }
 
     handleKeyDown(e) {
@@ -137,7 +229,23 @@ export class InputManager {
     }
 
     update() {
-        // 持续按键处理
+        // 持续按键处理 - 角度和力度
+        if (this.game.state === GAME_STATE.BATTLE) {
+            if (this.keys['ArrowUp']) {
+                this.angle = Math.min(this.angle + 1.5, WATER_CONFIG.MAX_ANGLE);
+            }
+            if (this.keys['ArrowDown']) {
+                this.angle = Math.max(this.angle - 1.5, WATER_CONFIG.MIN_ANGLE);
+            }
+            if (this.keys['ArrowLeft']) {
+                this.power = Math.max(this.power - 1.5, WATER_CONFIG.MIN_POWER);
+            }
+            if (this.keys['ArrowRight']) {
+                this.power = Math.min(this.power + 1.5, WATER_CONFIG.MAX_POWER);
+            }
+        }
+
+        // 发射水柱
         if (this.game.state === GAME_STATE.BATTLE && this.isShooting) {
             this.game.shootWater(this.angle, this.power);
         }

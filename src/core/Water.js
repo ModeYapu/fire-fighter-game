@@ -118,9 +118,30 @@ export class WaterSystem {
         this.droplets.forEach(droplet => {
             if (!droplet.active) return;
 
+            // 绘制水滴光晕
+            const gradient = ctx.createRadialGradient(
+                droplet.x, droplet.y, 0,
+                droplet.x, droplet.y, droplet.size * 2
+            );
+            gradient.addColorStop(0, 'rgba(52, 152, 219, 0.8)');
+            gradient.addColorStop(0.5, 'rgba(52, 152, 219, 0.4)');
+            gradient.addColorStop(1, 'transparent');
+
+            ctx.beginPath();
+            ctx.arc(droplet.x, droplet.y, droplet.size * 2, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            // 绘制水滴主体
             ctx.beginPath();
             ctx.arc(droplet.x, droplet.y, droplet.size, 0, Math.PI * 2);
-            ctx.fillStyle = COLORS.WATER;
+            ctx.fillStyle = '#3498db';
+            ctx.fill();
+            
+            // 水滴高光
+            ctx.beginPath();
+            ctx.arc(droplet.x - droplet.size * 0.3, droplet.y - droplet.size * 0.3, droplet.size * 0.4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
             ctx.fill();
         });
     }

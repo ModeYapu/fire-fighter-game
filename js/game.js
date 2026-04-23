@@ -12,10 +12,27 @@ class Game {
         this.facilities = [];
         this.waterDroplets = [];
         this.particles = [];
+        this.collectiblePowerups = [];
         
         // 策略系统
         this.prepareTime = GAME_CONFIG.PREPARE_TIME;
         this.selectedFacility = null;
+        
+        // 新系统
+        this.challengeSystem = null;
+        this.powerupSystem = null;
+        this.weatherSystem = null;
+        this.achievementSystem = null;
+        this.leaderboardSystem = null;
+        
+        // 统计数据
+        this.stats = {
+            shotsFired: 0,
+            shotsHit: 0,
+            waterUsed: 0,
+            firesExtinguished: 0,
+            buildingsLost: 0,
+        };
         
         // 帧率独立计时
         this.lastTime = 0;
@@ -25,15 +42,38 @@ class Game {
         this.canvas = document.getElementById('game-canvas');
         this.ctx = this.canvas.getContext('2d');
         
+        // 初始化新系统
+        this.challengeSystem = new ChallengeSystem(this);
+        this.powerupSystem = new PowerUpSystem(this);
+        this.weatherSystem = new WeatherSystem(this);
+        this.achievementSystem = new AchievementSystem(this);
+        this.leaderboardSystem = new LeaderboardSystem(this);
+        
         // 初始化UI
         ui.init(this);
         
         // 初始化输入
         input.init(this);
         
+        // 初始化道具快捷键
+        this.initPowerupKeys();
+        
         // 启动游戏循环
         this.lastTime = performance.now();
         requestAnimationFrame((t) => this.gameLoop(t));
+    }
+    
+    initPowerupKeys() {
+        // 数字键1-5使用道具
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '1' && e.key <= '5') {
+                const powerupTypes = Object.keys(POWERUP_TYPES);
+                const index = parseInt(e.key) - 1;
+                if (index < powerupTypes.length) {
+                    this.powerupSystem.usePowerup(powerupTypes[index]);
+                }
+            }
+        });
     }
     
     gameLoop(currentTime) {
@@ -93,11 +133,40 @@ class Game {
         // 更新粒子
         particles.update(this);
         
+        // 更新新系统
+        this.powerupSystem.update(deltaTime);
+        this.weatherSystem.update(deltaTime);
+        this.achievementSystem.update(deltaTime);
+        
+        // 检查道具拾取
+        this.checkPowerupCollection();
+        
         // 更新时间
         this.time -= deltaTime;
         
         // 检查胜负
         this.checkWinLose();
+    }
+    
+    checkPowerupCollection() {
+        const cannonX = this.waterCannon?.x || GAME_CONFIG.CANVAS_WIDTH / 2;
+        const cannonY = this.waterCannon?.y || GAME_CONFIG.CANVAS_HEIGHT - 50;
+        
+        this.collectiblePowerups.forEach(powerup => {
+            if (powerup.collected) return;
+            
+            const distance = Math.sqrt(
+                Math.pow(powerup.x - cannonX, 2) + 
+                Math.pow(powerup.y - cannonY, 2)
+            );
+            
+            if (distance < 50) {
+                this.powerupSystem.collectPowerup(powerup);
+            }
+        });
+        
+        // 清除已收集的道具
+        this.collectiblePowerups = this.collectiblePowerups.filter(p => !p.collected);
     }
     
     render() {
@@ -121,6 +190,21 @@ class Game {
         
         // 绘制粒子
         particles.render(this);
+        
+        // 渲染新系统
+        this.powerupSystem.render(this.ctx);
+        this.weatherSystem.render(this.ctx);
+        this.achievementSystem.render(this.ctx);
+        
+        // 渲染挑战模式UI
+        if (this.challengeSystem.currentChallenge) {
+            this.challengeSystem.renderChallengeUI(this.ctx, 10, 150);
+        }
+        
+        // 渲染排行榜
+        if (this.state === GAME_STATE.BATTLE) {
+            this.leaderboardSystem.renderLeaderboardUI(this.ctx, this.currentLevel + 1);
+        }
     }
     
     renderBackground() {

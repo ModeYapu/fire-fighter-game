@@ -1,4 +1,4 @@
-// Jest 测试环境设置
+// Jest 测试环境设置 - ES Modules 版本
 
 // 模拟 DOM 环境
 document.body.innerHTML = `
@@ -44,148 +44,51 @@ global.performance = {
 
 // 模拟 localStorage
 const localStorageMock = {
-  getItem: jest.fn(),
+  getItem: jest.fn((key) => {
+    const store = {};
+    return store[key] || null;
+  }),
   setItem: jest.fn(),
   clear: jest.fn()
 };
 global.localStorage = localStorageMock;
 
-// 全局变量
-global.GAME_CONFIG = {
-  CANVAS_WIDTH: 800,
-  CANVAS_HEIGHT: 600,
-  TARGET_FPS: 60,
-  PREPARE_TIME: 30
-};
-
-global.PHYSICS = {
-  GRAVITY: 9.8,
-  PIXELS_PER_METER: 20,
-  AIR_RESISTANCE: 0.99,
-  WIND_VARIATION: 0.1
-};
-
-global.WATER_CONFIG = {
-  MAX_POWER: 100,
-  MIN_POWER: 10,
-  MAX_ANGLE: 80,
-  MIN_ANGLE: 0,
-  DROPLET_SIZE: 3,
-  STREAM_DENSITY: 5,
-  PARTICLE_POOL_SIZE: 500
-};
-
-global.FIRE_CONFIG = {
-  MAX_INTENSITY: 5,
-  MIN_INTENSITY: 1,
-  SPREAD_INTERVAL: 60,
-  SPREAD_PROBABILITY: 0.02,
-  DAMAGE_RATE: 0.01,
-  EXTINGUISH_RATE: 0.1,
-  PARTICLE_POOL_SIZE: 300
-};
-
-global.BUILDING_TYPES = {
-  WOOD: {
-    name: '木屋',
-    width: 80,
-    height: 60,
-    health: 100,
-    fireResistance: 0.5,
-    color: '#8B4513'
-  },
-  BRICK: {
-    name: '砖房',
-    width: 100,
-    height: 80,
-    health: 150,
-    fireResistance: 0.7,
-    color: '#B22222'
-  },
-  HIGH_RISE: {
-    name: '高楼',
-    width: 120,
-    height: 120,
-    health: 200,
-    fireResistance: 0.3,
-    color: '#4682B4'
+// 模拟 CanvasRenderingContext2D
+HTMLCanvasElement.prototype.getContext = jest.fn((contextType) => {
+  if (contextType === '2d') {
+    return {
+      clearRect: jest.fn(),
+      fillRect: jest.fn(),
+      strokeRect: jest.fn(),
+      beginPath: jest.fn(),
+      closePath: jest.fn(),
+      moveTo: jest.fn(),
+      lineTo: jest.fn(),
+      arc: jest.fn(),
+      fill: jest.fn(),
+      stroke: jest.fn(),
+      createLinearGradient: jest.fn(() => ({
+        addColorStop: jest.fn()
+      })),
+      createRadialGradient: jest.fn(() => ({
+        addColorStop: jest.fn()
+      })),
+      save: jest.fn(),
+      restore: jest.fn(),
+      translate: jest.fn(),
+      scale: jest.fn(),
+      rotate: jest.fn(),
+      drawImage: jest.fn(),
+      measureText: jest.fn(() => ({ width: 100 })),
+      font: '',
+      fillStyle: '',
+      strokeStyle: '',
+      lineWidth: 1,
+      textAlign: 'left',
+      textBaseline: 'top'
+    };
   }
-};
+  return null;
+});
 
-global.FACILITY_TYPES = {
-  HYDRANT: {
-    name: '消防栓',
-    cost: 50,
-    range: 100,
-    icon: '💧',
-    color: '#4169E1'
-  },
-  FIRE_WALL: {
-    name: '防火墙',
-    cost: 80,
-    range: 50,
-    icon: '🧱',
-    color: '#8B0000'
-  },
-  FIGHTER: {
-    name: '消防员',
-    cost: 100,
-    range: 80,
-    icon: '👨‍🚒',
-    color: '#FF6600'
-  }
-};
-
-global.RESOURCE_CONFIG = {
-  INITIAL_WATER: 1000,
-  MAX_WATER: 2000,
-  REFILL_RATE: 10,
-  WATER_PER_SHOT: 2,
-  SCORE_PER_FIRE: 100,
-  SCORE_PER_BUILDING_SAVED: 500
-};
-
-global.GAME_STATE = {
-  MENU: 'MENU',
-  PREPARE: 'PREPARE',
-  BATTLE: 'BATTLE',
-  WIN: 'WIN',
-  LOSE: 'LOSE'
-};
-
-global.COLORS = {
-  WATER: '#3498db',
-  FIRE: '#e74c3c',
-  FIRE_GLOW: '#ff6b35',
-  SMOKE: '#7f8c8d'
-};
-
-global.STORAGE_KEYS = {
-  PROGRESS: 'firefighter_progress'
-};
-
-global.LEVEL_DATA = [
-  {
-    name: '教学关卡',
-    description: '学习基本操作',
-    buildings: [
-      { type: 'WOOD', x: 300, y: 450 }
-    ],
-    initialFires: [0],
-    wind: 0,
-    initialWater: 1000,
-    time: 30,
-    targetScore: 500
-  }
-];
-
-global.KEYS = {
-  UP: 'w',
-  DOWN: 's',
-  LEFT: 'a',
-  RIGHT: 'd',
-  SPACE: ' ',
-  ESC: 'Escape'
-};
-
-console.log('✅ Test environment setup complete');
+console.log('✅ Test environment setup complete (ES Modules)');

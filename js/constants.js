@@ -252,4 +252,260 @@ const STORAGE_KEYS = {
     PROGRESS: 'fireFighterProgress',
     SETTINGS: 'fireFighterSettings',
     HIGH_SCORES: 'fireFighterHighScores',
+    ACHIEVEMENTS: 'fireFighterAchievements',
+    LEADERBOARD: 'fireFighterLeaderboard',
+};
+
+// ==================== 挑战模式配置 ====================
+const CHALLENGE_TYPES = {
+    TIME_LIMIT: {
+        name: '限时挑战',
+        description: '30秒内熄灭所有火焰',
+        icon: '⏱️',
+        timeLimit: 30,
+        waterBonus: 1.0,
+        scoreMultiplier: 1.5,
+    },
+    WATER_SAVE: {
+        name: '节水挑战',
+        description: '用水量不超过500',
+        icon: '💧',
+        maxWater: 500,
+        timeBonus: 1.2,
+        scoreMultiplier: 2.0,
+    },
+    ACCURACY: {
+        name: '精准挑战',
+        description: '命中率达到80%以上',
+        icon: '🎯',
+        minAccuracy: 0.8,
+        scoreMultiplier: 2.5,
+    },
+    SPEED_RUN: {
+        name: '速通挑战',
+        description: '最快时间通关',
+        icon: '⚡',
+        scoreMultiplier: 3.0,
+    },
+};
+
+// ==================== 道具配置 ====================
+const POWERUP_TYPES = {
+    HELICOPTER: {
+        name: '直升机',
+        icon: '🚁',
+        description: '空中洒水，大范围灭火',
+        duration: 5000, // 5秒
+        cost: 200,
+        effect: 'area_extinguish',
+        range: 150,
+    },
+    FOAM_BOMB: {
+        name: '泡沫弹',
+        icon: '💣',
+        description: '爆炸覆盖区域灭火',
+        cost: 150,
+        effect: 'explosion',
+        radius: 100,
+    },
+    SMOKE_GRENADE: {
+        name: '烟雾弹',
+        icon: '💨',
+        description: '减缓火势蔓延50%',
+        duration: 10000, // 10秒
+        cost: 100,
+        effect: 'slow_spread',
+        slowFactor: 0.5,
+    },
+    FREEZE_GUN: {
+        name: '冰冻枪',
+        icon: '❄️',
+        description: '临时冻结火焰10秒',
+        duration: 10000, // 10秒
+        cost: 250,
+        effect: 'freeze_fire',
+    },
+    BUCKET_CHAIN: {
+        name: '水桶链',
+        icon: '🪣',
+        description: '自动回水速度提高3倍',
+        duration: 15000, // 15秒
+        cost: 120,
+        effect: 'fast_refill',
+        refillMultiplier: 3.0,
+    },
+};
+
+// ==================== 天气配置 ====================
+const WEATHER_TYPES = {
+    RAIN: {
+        name: '雨天',
+        icon: '🌧️',
+        description: '自动灭火但视野模糊',
+        fireReduceRate: 0.05, // 每秒减少5%
+        visibility: 0.7,
+        waterRefillBonus: 1.5,
+    },
+    WIND: {
+        name: '大风',
+        icon: '🌪️',
+        description: '水柱偏移大，火势蔓延快',
+        angleOffset: 20, // ±20度
+        spreadMultiplier: 1.5,
+        waterDrift: 0.3,
+    },
+    NIGHT: {
+        name: '夜间',
+        icon: '🌙',
+        description: '视野受限，需要探照灯',
+        visibilityRadius: 200,
+        spotlightEnabled: true,
+    },
+    DROUGHT: {
+        name: '干旱',
+        icon: '☀️',
+        description: '水资源减少50%，火焰更强',
+        waterReduction: 0.5,
+        fireIntensityMultiplier: 1.3,
+    },
+    CLEAR: {
+        name: '晴天',
+        icon: '☀️',
+        description: '正常天气',
+    },
+};
+
+// ==================== 成就配置 ====================
+const ACHIEVEMENTS = {
+    // 关卡成就
+    FIRST_LEVEL: {
+        id: 'first_level',
+        name: '消防新手',
+        description: '完成第1关',
+        icon: '🚒',
+        condition: { type: 'level_complete', level: 1 },
+    },
+    ALL_LEVELS: {
+        id: 'all_levels',
+        name: '消防英雄',
+        description: '完成所有关卡',
+        icon: '🏆',
+        condition: { type: 'all_levels_complete' },
+    },
+    PERFECT_LEVEL: {
+        id: 'perfect_level',
+        name: '完美通关',
+        description: '不损失任何建筑通关',
+        icon: '⭐',
+        condition: { type: 'no_building_lost' },
+    },
+
+    // 节水成就
+    WATER_SAVER_1000: {
+        id: 'water_saver_1000',
+        name: '节水达人',
+        description: '单关卡节水1000',
+        icon: '💧',
+        condition: { type: 'water_saved', amount: 1000 },
+    },
+    WATER_SAVER_10000: {
+        id: 'water_saver_10000',
+        name: '节水大师',
+        description: '累计节水10000',
+        icon: '🌊',
+        condition: { type: 'total_water_saved', amount: 10000 },
+    },
+
+    // 速度成就
+    SPEED_DEMON: {
+        id: 'speed_demon',
+        name: '速度之星',
+        description: '30秒内完成任意关卡',
+        icon: '⚡',
+        condition: { type: 'fast_complete', time: 30 },
+    },
+    ALL_SPEED: {
+        id: 'all_speed',
+        name: '闪电消防员',
+        description: '所有关卡速通',
+        icon: '🌩️',
+        condition: { type: 'all_fast_complete', time: 60 },
+    },
+
+    // 精准成就
+    SHARPSHOOTER: {
+        id: 'sharpshooter',
+        name: '精准射手',
+        description: '命中率达到90%',
+        icon: '🎯',
+        condition: { type: 'accuracy', rate: 0.9 },
+    },
+
+    // 挑战成就
+    CHALLENGE_MASTER: {
+        id: 'challenge_master',
+        name: '挑战大师',
+        description: '完成所有挑战模式',
+        icon: '🏅',
+        condition: { type: 'all_challenges_complete' },
+    },
+
+    // 道具成就
+    POWERUP_USER: {
+        id: 'powerup_user',
+        name: '道具专家',
+        description: '使用所有类型的道具',
+        icon: '🎁',
+        condition: { type: 'use_all_powerups' },
+    },
+
+    // 天气成就
+    WEATHER_MASTER: {
+        id: 'weather_master',
+        name: '天气大师',
+        description: '在所有天气下通关',
+        icon: '🌤️',
+        condition: { type: 'all_weather_complete' },
+    },
+
+    // 连续成就
+    STREAK_3: {
+        id: 'streak_3',
+        name: '三连胜',
+        description: '连续3关获得3星',
+        icon: '🔥',
+        condition: { type: 'streak', count: 3 },
+    },
+    STREAK_5: {
+        id: 'streak_5',
+        name: '五连胜',
+        description: '连续5关获得3星',
+        icon: '💫',
+        condition: { type: 'streak', count: 5 },
+    },
+
+    // 累计成就
+    FIRES_100: {
+        id: 'fires_100',
+        name: '灭火新手',
+        description: '累计熄灭100个火焰',
+        icon: '🔥',
+        condition: { type: 'total_fires', count: 100 },
+    },
+    FIRES_500: {
+        id: 'fires_500',
+        name: '灭火专家',
+        description: '累计熄灭500个火焰',
+        icon: '💧',
+        condition: { type: 'total_fires', count: 500 },
+    },
+
+    // 分数成就
+    SCORE_10000: {
+        id: 'score_10000',
+        name: '得分新星',
+        description: '单关卡得分超过10000',
+        icon: '💫',
+        condition: { type: 'score', amount: 10000 },
+    },
 };

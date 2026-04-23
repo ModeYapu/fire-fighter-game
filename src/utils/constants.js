@@ -3,7 +3,7 @@ export const GAME_CONFIG = {
     CANVAS_WIDTH: 800,
     CANVAS_HEIGHT: 600,
     TARGET_FPS: 60,
-    PREPARE_TIME: 30, // 准备阶段时间(秒)
+    PREPARE_TIME: 10, // 准备阶段时间(秒) - 缩短到10秒
 };
 
 // ==================== 物理常量 ====================
@@ -20,8 +20,8 @@ export const WATER_CONFIG = {
     MIN_POWER: 10,
     MAX_ANGLE: 80,
     MIN_ANGLE: 0,
-    DROPLET_SIZE: 3,
-    STREAM_DENSITY: 5, // 每帧发射水滴数
+    DROPLET_SIZE: 6,  // 增大水滴
+    STREAM_DENSITY: 8, // 每帧发射水滴数 - 更密集
     PARTICLE_POOL_SIZE: 500,
 };
 
@@ -29,10 +29,10 @@ export const WATER_CONFIG = {
 export const FIRE_CONFIG = {
     MAX_INTENSITY: 5,
     MIN_INTENSITY: 1,
-    SPREAD_INTERVAL: 60,        // 蔓延检查间隔（帧数，60帧=1秒）
-    SPREAD_PROBABILITY: 0.02,   // 基础蔓延概率（2%）
-    DAMAGE_RATE: 0.01,
-    EXTINGUISH_RATE: 0.1,
+    SPREAD_INTERVAL: 90,        // 蔓延检查间隔（帧数）- 降低蔓延速度
+    SPREAD_PROBABILITY: 0.01,   // 基础蔓延概率 - 降低
+    DAMAGE_RATE: 0.008,         // 降低伤害
+    EXTINGUISH_RATE: 0.15,      // 增加灭火效果
     PARTICLE_POOL_SIZE: 300,
 };
 
@@ -40,27 +40,30 @@ export const FIRE_CONFIG = {
 export const BUILDING_TYPES = {
     WOOD: {
         name: '木屋',
-        width: 80,
-        height: 60,
+        width: 160,
+        height: 130,
         health: 100,
         fireResistance: 0.5,
-        color: '#8B4513',
+        color: '#D2691E',
+        roofColor: '#8B4513',
     },
     BRICK: {
         name: '砖房',
-        width: 100,
-        height: 80,
+        width: 180,
+        height: 150,
         health: 150,
         fireResistance: 0.7,
-        color: '#B22222',
+        color: '#CD5C5C',
+        roofColor: '#8B0000',
     },
     HIGH_RISE: {
         name: '高楼',
-        width: 120,
-        height: 120,
+        width: 140,
+        height: 220,
         health: 200,
         fireResistance: 0.3,
         color: '#4682B4',
+        roofColor: '#2F4F4F',
     },
 };
 
@@ -165,91 +168,75 @@ export const LEVEL_DATA = [
     {
         id: 1,
         name: '教学关卡',
-        description: '学习基本的灭火操作',
+        description: '学习灭火操作',
         buildings: [
-            { type: 'WOOD', x: 350, y: 450, initialFire: true },
+            { type: 'WOOD', x: 300, y: 400, initialFire: true },
         ],
         initialFires: [0],
         initialWater: 1000,
-        time: 60,
+        time: 45,
         targetScore: 500,
         wind: 0,
     },
     {
         id: 2,
-        name: '小区火灾',
-        description: '扑灭3栋建筑的火灾',
+        name: '双建筑',
+        description: '扑灭2栋建筑的火灾',
         buildings: [
-            { type: 'WOOD', x: 200, y: 450, initialFire: true },
-            { type: 'BRICK', x: 350, y: 430, initialFire: false },
-            { type: 'WOOD', x: 500, y: 450, initialFire: true },
+            { type: 'WOOD', x: 120, y: 400, initialFire: true },
+            { type: 'BRICK', x: 450, y: 380, initialFire: true },
         ],
-        initialFires: [0, 2],
-        initialWater: 1200,
-        time: 90,
+        initialFires: [0, 1],
+        initialWater: 1500,
+        time: 60,
         targetScore: 1000,
         wind: 0,
     },
     {
         id: 3,
-        name: '风力挑战',
-        description: '在有风的情况下灭火',
+        name: '高楼救援',
+        description: '拯救高楼火灾',
         buildings: [
-            { type: 'WOOD', x: 150, y: 450, initialFire: true },
-            { type: 'WOOD', x: 280, y: 450, initialFire: true },
-            { type: 'BRICK', x: 410, y: 430, initialFire: false },
-            { type: 'WOOD', x: 540, y: 450, initialFire: true },
-            { type: 'WOOD', x: 670, y: 450, initialFire: false },
+            { type: 'WOOD', x: 100, y: 400, initialFire: true },
+            { type: 'HIGH_RISE', x: 320, y: 330, initialFire: true },
+            { type: 'WOOD', x: 550, y: 400, initialFire: false },
         ],
-        initialFires: [0, 1, 3],
-        initialWater: 1500,
-        time: 120,
+        initialFires: [0, 1],
+        initialWater: 2000,
+        time: 90,
         targetScore: 1500,
-        wind: 5,
+        wind: 0,
     },
     {
         id: 4,
-        name: '城市大火',
-        description: '扑灭8栋建筑的火灾',
+        name: '风力挑战',
+        description: '有风情况下灭火',
         buildings: [
-            { type: 'WOOD', x: 80, y: 450, initialFire: true },
-            { type: 'BRICK', x: 180, y: 430, initialFire: true },
-            { type: 'HIGH_RISE', x: 300, y: 400, initialFire: false },
-            { type: 'WOOD', x: 430, y: 450, initialFire: true },
-            { type: 'BRICK', x: 530, y: 430, initialFire: false },
-            { type: 'WOOD', x: 640, y: 450, initialFire: true },
-            { type: 'BRICK', x: 740, y: 430, initialFire: false },
-            { type: 'HIGH_RISE', x: 400, y: 450, initialFire: false },
+            { type: 'BRICK', x: 150, y: 390, initialFire: true },
+            { type: 'HIGH_RISE', x: 380, y: 330, initialFire: false },
+            { type: 'BRICK', x: 550, y: 390, initialFire: true },
         ],
-        initialFires: [0, 1, 3, 5],
+        initialFires: [0, 2],
         initialWater: 2000,
-        time: 150,
-        targetScore: 2500,
+        time: 90,
+        targetScore: 2000,
         wind: 3,
     },
     {
         id: 5,
         name: '终极挑战',
-        description: '扑灭12栋建筑的火灾',
+        description: '扑灭所有火灾',
         buildings: [
-            { type: 'WOOD', x: 50, y: 450, initialFire: true },
-            { type: 'WOOD', x: 140, y: 450, initialFire: true },
-            { type: 'BRICK', x: 230, y: 430, initialFire: true },
-            { type: 'BRICK', x: 330, y: 430, initialFire: false },
-            { type: 'HIGH_RISE', x: 430, y: 400, initialFire: true },
-            { type: 'HIGH_RISE', x: 550, y: 400, initialFire: false },
-            { type: 'BRICK', x: 670, y: 430, initialFire: true },
-            { type: 'WOOD', x: 500, y: 450, initialFire: true },
-            { type: 'WOOD', x: 600, y: 450, initialFire: true },
-            { type: 'BRICK', x: 700, y: 430, initialFire: true },
-            { type: 'WOOD', x: 100, y: 450, initialFire: false },
-            { type: 'HIGH_RISE', x: 250, y: 400, initialFire: true },
+            { type: 'WOOD', x: 50, y: 400, initialFire: true },
+            { type: 'BRICK', x: 240, y: 390, initialFire: true },
+            { type: 'HIGH_RISE', x: 450, y: 330, initialFire: true },
+            { type: 'WOOD', x: 620, y: 400, initialFire: false },
         ],
-        initialFires: [0, 1, 2, 4, 6, 7, 8, 9, 11],
+        initialFires: [0, 1, 2],
         initialWater: 2500,
-        time: 180,
-        targetScore: 4000,
-        wind: 7,
+        time: 120,
+        targetScore: 3000,
+        wind: 5,
     },
 ];
 

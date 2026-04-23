@@ -1,27 +1,41 @@
 /**
  * 物理引擎测试
  */
+import { PhysicsEngine } from '../src/systems/PhysicsEngine.js';
 
-describe('Physics', () => {
-  let Physics;
+// Mock constants
+jest.mock('../src/utils/constants.js', () => ({
+  PHYSICS: {
+    GRAVITY: 9.8,
+    PIXELS_PER_METER: 20,
+    AIR_RESISTANCE: 0.99,
+    WIND_VARIATION: 0.1
+  },
+  GAME_STATE: {
+    MENU: 'MENU',
+    PREPARE: 'PREPARE',
+    BATTLE: 'BATTLE',
+    WIN: 'WIN',
+    LOSE: 'LOSE'
+  },
+  LEVEL_DATA: [
+    {
+      name: '教学关卡',
+      buildings: [{ type: 'WOOD', x: 300, y: 450 }],
+      wind: 0
+    }
+  ]
+}));
+
+describe('PhysicsEngine', () => {
   let physics;
 
-  beforeAll(() => {
-    // 动态加载physics.js
-    const fs = require('fs');
-    const path = require('path');
-    const code = fs.readFileSync(path.join(__dirname, '../js/physics.js'), 'utf8');
-    eval(code);
-    Physics = global.Physics;
-    physics = new Physics();
-  });
-
   beforeEach(() => {
-    physics = new Physics();
+    physics = new PhysicsEngine();
   });
 
   test('应该正确初始化', () => {
-    expect(physics.gravity).toBe(PHYSICS.GRAVITY);
+    expect(physics.gravity).toBe(9.8);
     expect(physics.wind).toBe(0);
   });
 
@@ -102,7 +116,7 @@ describe('Physics', () => {
 
   test('应该正确更新风力', () => {
     const mockGame = {
-      state: GAME_STATE.BATTLE,
+      state: 'BATTLE',
       currentLevel: 0
     };
     
