@@ -101,6 +101,8 @@ button {
     text-align: center;
     margin-bottom: 30px;
     animation: logoFadeIn 0.8s ease-out;
+    position: relative;
+    z-index: 10;
 }
 
 .game-logo {
