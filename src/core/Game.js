@@ -16,10 +16,12 @@ import { UIManager } from '../systems/UIManager.js';
 // 注意：由于模块路径问题，这些系统将通过全局变量访问
 // 在实际运行时，这些系统已经在全局作用域中可用
 
-// 导入扩展系统（战役/天气/合作）
+// 导入扩展系统（战役/天气/合作/科技树/社区）
 import { CampaignSystem } from '../../js/campaign.js';
 import { WeatherSystem } from '../../js/weather-dynamic.js';
 import { CoopModeSystem } from '../../js/coop-mode.js';
+import { TechTreeSystem } from '../../js/tech-tree.js';
+import { CommunitySystem } from '../../js/community.js';
 
 export class Game {
     constructor() {
@@ -65,10 +67,12 @@ export class Game {
         this.dailyChallenge = null;
         this.extendedFacilitySystem = null;
 
-        // 扩展系统（战役/天气/合作）
+        // 扩展系统（战役/天气/合作/科技树/社区）
         this.campaignSystem = null;
         this.weatherSystem = null;
         this.coopModeSystem = null;
+        this.techTreeSystem = null;
+        this.communitySystem = null;
 
         // 帧率独立计时
         this.lastTime = 0;
@@ -130,11 +134,13 @@ export class Game {
                 { name: 'ExtendedFacilitySystem', prop: 'extendedFacilitySystem', init: () => new ExtendedFacilitySystem() }
             ];
 
-            // 扩展系统（战役/天气/合作）- 始终加载
+            // 扩展系统（战役/天气/合作/科技树/社区）- 始终加载
             const extensionSystems = [
                 { name: 'CampaignSystem', prop: 'campaignSystem', init: (g) => { const sys = new CampaignSystem(g); sys.loadProgress(); return sys; } },
                 { name: 'WeatherSystem', prop: 'weatherSystem', init: (g) => new WeatherSystem(g) },
                 { name: 'CoopModeSystem', prop: 'coopModeSystem', init: (g) => new CoopModeSystem(g) },
+                { name: 'TechTreeSystem', prop: 'techTreeSystem', init: (g) => new TechTreeSystem(g) },
+                { name: 'CommunitySystem', prop: 'communitySystem', init: (g) => new CommunitySystem(g) },
             ];
 
             const initializedSystems = [];
@@ -314,6 +320,50 @@ export class Game {
         if (backCoopBtn) {
             backCoopBtn.addEventListener('click', () => {
                 document.getElementById('coop-menu').style.display = 'none';
+                document.getElementById('main-menu').style.display = 'flex';
+            });
+        }
+
+        // 科技树按钮
+        const techTreeBtn = document.getElementById('btn-tech-tree');
+        if (techTreeBtn) {
+            techTreeBtn.addEventListener('click', () => {
+                const techTreeMenu = document.getElementById('tech-tree-menu');
+                const techTreeContent = document.getElementById('tech-tree-content');
+                const mainMenu = document.getElementById('main-menu');
+                if (techTreeMenu && techTreeContent && this.techTreeSystem) {
+                    mainMenu.style.display = 'none';
+                    techTreeMenu.style.display = 'flex';
+                    this.techTreeSystem.renderTechTreeUI(techTreeContent);
+                }
+            });
+        }
+        const backTechTreeBtn = document.getElementById('btn-back-tech-tree');
+        if (backTechTreeBtn) {
+            backTechTreeBtn.addEventListener('click', () => {
+                document.getElementById('tech-tree-menu').style.display = 'none';
+                document.getElementById('main-menu').style.display = 'flex';
+            });
+        }
+
+        // 社区按钮
+        const communityBtn = document.getElementById('btn-community');
+        if (communityBtn) {
+            communityBtn.addEventListener('click', () => {
+                const communityMenu = document.getElementById('community-menu');
+                const communityContent = document.getElementById('community-content');
+                const mainMenu = document.getElementById('main-menu');
+                if (communityMenu && communityContent && this.communitySystem) {
+                    mainMenu.style.display = 'none';
+                    communityMenu.style.display = 'flex';
+                    this.communitySystem.renderCommunityUI(communityContent);
+                }
+            });
+        }
+        const backCommunityBtn = document.getElementById('btn-back-community');
+        if (backCommunityBtn) {
+            backCommunityBtn.addEventListener('click', () => {
+                document.getElementById('community-menu').style.display = 'none';
                 document.getElementById('main-menu').style.display = 'flex';
             });
         }
@@ -705,22 +755,33 @@ export class Game {
     win() {
         this.state = GAME_STATE.WIN;
         const savedBuildings = this.buildings.filter(b => b.health > 0).length;
-        
+
         // 计算奖励
         const stats = this.getLevelStats();
         const rewards = this.upgradeSystem?.calculateRewards(stats);
-        
+
         // 检查每日挑战
         if (this.dailyChallenge?.checkChallengeCompletion(stats)) {
             // 挑战完成
         }
-        
+
+        // 🎉 奖励科技点数和社区资源
+        const techPointsEarned = 10 + Math.floor(this.score / 100);
+        this.techTreeSystem?.addTechPoints(techPointsEarned);
+
+        const goldEarned = 50 + Math.floor(this.score / 10);
+        const materialsEarned = 20 + Math.floor(savedBuildings * 5);
+        const reputationEarned = 5 + savedBuildings;
+        this.communitySystem?.addResource('gold', goldEarned);
+        this.communitySystem?.addResource('materials', materialsEarned);
+        this.communitySystem?.addReputation(reputationEarned);
+
         // 保存进度
         this.autoSaveSystem?.save(0);
-        
+
         // 播放胜利音效
         this.enhancedAudio?.play('victory');
-        
+
         this.ui.showResult(true, this.score, this.water, savedBuildings);
     }
 

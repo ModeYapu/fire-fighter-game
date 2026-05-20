@@ -139,6 +139,8 @@
                 <button class="menu-btn secondary" id="btn-vehicle">🚒 消防车库</button>
                 <button class="menu-btn secondary" id="btn-achievements">🏆 成就</button>
                 <button class="menu-btn secondary" id="btn-leaderboard">📊 排行榜</button>
+				<button class="menu-btn secondary" id="btn-tech-tree">🔬 科技树</button>
+				<button class="menu-btn secondary" id="btn-community">🏘️ 社区</button>
                 <button class="menu-btn secondary" id="btn-settings">⚙️ 设置</button>
             </div>
         </div>
@@ -243,6 +245,20 @@
             <div id="weather-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0;"></div>
             <button class="menu-btn secondary" id="btn-back-weather">← 返回</button>
         </div>
+
+		<!-- 科技树界面 -->
+		<div id="tech-tree-menu" class="menu-overlay" style="display: none;">
+		    <div class="menu-title">🔬 科技树</div>
+		    <div id="tech-tree-content" style="max-height: 500px; overflow-y: auto; padding: 10px;"></div>
+		    <button class="menu-btn secondary" id="btn-back-tech-tree">← 返回</button>
+		</div>
+
+		<!-- 社区界面 -->
+		<div id="community-menu" class="menu-overlay" style="display: none;">
+		    <div class="menu-title">🏘️ 社区</div>
+		    <div id="community-content" style="max-height: 500px; overflow-y: auto; padding: 10px;"></div>
+		    <button class="menu-btn secondary" id="btn-back-community">← 返回</button>
+		</div>
     </div>
 
     <!-- 游戏脚本 -->

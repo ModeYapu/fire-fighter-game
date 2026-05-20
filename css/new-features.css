@@ -422,3 +422,640 @@
         margin-top: 5px;
     }
 }
+
+/* ==================== 科技树样式 ==================== */
+
+.tech-points-display {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 16px 24px;
+    border-radius: 16px;
+    font-size: 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+}
+
+.tech-icon {
+    font-size: 28px;
+}
+
+.tech-points-value {
+    color: #FFD700;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.tech-route {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border-left: 4px solid var(--route-color, #3498db);
+}
+
+.tech-route-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.route-icon {
+    font-size: 36px;
+}
+
+.route-info h3 {
+    color: #fff;
+    font-size: 20px;
+    margin: 0 0 4px 0;
+}
+
+.route-info p {
+    color: #8e9aaf;
+    font-size: 14px;
+    margin: 0;
+}
+
+.route-progress {
+    margin-left: auto;
+    color: var(--route-color, #3498db);
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.tech-levels-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tech-level {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.tech-level.unlocked {
+    border-color: rgba(46, 204, 113, 0.4);
+    background: rgba(46, 204, 113, 0.06);
+}
+
+.tech-level.can-unlock {
+    border-color: rgba(52, 152, 219, 0.4);
+    cursor: pointer;
+}
+
+.tech-level.can-unlock:hover {
+    background: rgba(52, 152, 219, 0.1);
+    transform: translateX(4px);
+}
+
+.tech-level.locked {
+    opacity: 0.5;
+}
+
+.tech-level-icon {
+    font-size: 28px;
+    min-width: 40px;
+    text-align: center;
+}
+
+.tech-level-content {
+    flex: 1;
+}
+
+.tech-level-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.tech-level-name {
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.tech-level-cost {
+    color: #FFD700;
+    font-size: 14px;
+}
+
+.tech-level-effect {
+    color: #8e9aaf;
+    font-size: 13px;
+}
+
+.tech-requirement {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.tech-unlock-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 20px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.tech-unlock-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 14px rgba(52, 152, 219, 0.4);
+}
+
+/* ==================== 社区样式 ==================== */
+
+.community-resources {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.resource-item {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 140px;
+}
+
+.resource-item.gold {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+.resource-item.materials {
+    background: linear-gradient(135deg, #7f8c8d, #95a5a6);
+}
+
+.resource-item.reputation {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+.resource-icon {
+    font-size: 24px;
+}
+
+.resource-value {
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+    margin-left: auto;
+}
+
+.community-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.community-tab {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 24px;
+    color: #8e9aaf;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.community-tab:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.community-tab.active {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border-color: #3498db;
+    color: #fff;
+}
+
+#community-tab-content {
+    min-height: 300px;
+}
+
+/* 建筑卡片 */
+.building-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 16px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.building-card.owned {
+    border-color: rgba(39, 174, 96, 0.3);
+}
+
+.building-card.can-upgrade {
+    border-color: rgba(52, 152, 219, 0.4);
+    cursor: pointer;
+}
+
+.building-card.can-upgrade:hover {
+    background: rgba(52, 152, 219, 0.08);
+}
+
+.building-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.building-icon {
+    font-size: 32px;
+}
+
+.building-info {
+    flex: 1;
+}
+
+.building-info h3 {
+    color: #fff;
+    font-size: 18px;
+    margin: 0 0 4px 0;
+}
+
+.building-info p {
+    color: #8e9aaf;
+    font-size: 13px;
+    margin: 0;
+}
+
+.building-level {
+    background: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.building-current {
+    background: rgba(39, 174, 96, 0.1);
+    border-left: 3px solid #27ae60;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #2ecc71;
+    display: flex;
+    justify-content: space-between;
+}
+
+.building-status {
+    color: #e74c3c;
+    font-size: 14px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+}
+
+.building-next {
+    background: rgba(52, 152, 219, 0.08);
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.next-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #8e9aaf;
+}
+
+.upgrade-cost {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+}
+
+.upgrade-cost span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.upgrade-btn {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 24px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(39, 174, 96, 0.3);
+    width: 100%;
+}
+
+.upgrade-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(39, 174, 96, 0.4);
+}
+
+.building-max {
+    color: #f39c12;
+    font-size: 14px;
+    text-align: center;
+    padding: 10px;
+}
+
+/* 消防员部分 */
+.firefighter-stats {
+    background: rgba(52, 152, 219, 0.1);
+    border: 1px solid rgba(52, 152, 219, 0.2);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.firefighter-section {
+    margin-bottom: 24px;
+}
+
+.firefighter-section h3 {
+    color: #fff;
+    font-size: 16px;
+    margin-bottom: 14px;
+    padding-left: 8px;
+    border-left: 3px solid #3498db;
+}
+
+.empty-message {
+    color: #8e9aaf;
+    text-align: center;
+    padding: 30px;
+    font-size: 14px;
+}
+
+.firefighter-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+.firefighter-card.recruited {
+    border-color: rgba(39, 174, 96, 0.3);
+}
+
+.firefighter-card.candidate {
+    border-color: rgba(243, 156, 18, 0.3);
+    cursor: pointer;
+}
+
+.firefighter-card.candidate:hover {
+    background: rgba(243, 156, 18, 0.08);
+}
+
+.fighter-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.fighter-avatar {
+    font-size: 32px;
+}
+
+.fighter-info {
+    flex: 1;
+}
+
+.fighter-info h4 {
+    color: #fff;
+    font-size: 16px;
+    margin: 0 0 4px 0;
+}
+
+.fighter-level {
+    color: #8e9aaf;
+    font-size: 12px;
+}
+
+.fighter-cost {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.fighter-stats {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.stat-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.stat-bar span:first-child {
+    color: #8e9aaf;
+    font-size: 12px;
+    min-width: 40px;
+}
+
+.stat-bar-fill {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.stat-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.fighter-trait {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.trait-badge {
+    background: rgba(155, 89, 182, 0.2);
+    color: #9b59b6;
+    padding: 4px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.trait-effect {
+    color: #8e9aaf;
+    font-size: 12px;
+}
+
+.recruit-btn {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-shadow: 0 2px 10px rgba(39, 174, 96, 0.3);
+}
+
+.recruit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(39, 174, 96, 0.4);
+}
+
+/* 资源信息 */
+.resource-info-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 16px;
+}
+
+.resource-info-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.resource-info-icon {
+    font-size: 28px;
+}
+
+.resource-info-header h3 {
+    color: #fff;
+    font-size: 18px;
+    margin: 0;
+}
+
+.resource-info-card > p {
+    color: #8e9aaf;
+    font-size: 14px;
+    margin: 0 0 12px 0;
+}
+
+.resource-sources {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.resource-sources strong {
+    color: #fff;
+    font-size: 13px;
+}
+
+.resource-sources ul {
+    margin: 8px 0 0 0;
+    padding-left: 20px;
+}
+
+.resource-sources li {
+    color: #8e9aaf;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.daily-production {
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(39, 174, 96, 0.1));
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.daily-production h3 {
+    color: #2ecc71;
+    font-size: 18px;
+    margin: 0 0 8px 0;
+}
+
+.daily-production > p {
+    color: #8e9aaf;
+    font-size: 14px;
+    margin: 0 0 16px 0;
+}
+
+.production-list {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 16px;
+}
+
+.production-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    color: #fff;
+    font-size: 15px;
+}
+
+.collect-btn {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-shadow: 0 2px 10px rgba(39, 174, 96, 0.3);
+}
+
+.collect-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(39, 174, 96, 0.4);
+}
