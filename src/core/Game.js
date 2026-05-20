@@ -16,6 +16,11 @@ import { UIManager } from '../systems/UIManager.js';
 // 注意：由于模块路径问题，这些系统将通过全局变量访问
 // 在实际运行时，这些系统已经在全局作用域中可用
 
+// 导入扩展系统（战役/天气/合作）
+import { CampaignSystem } from '../../js/campaign.js';
+import { WeatherSystem } from '../../js/weather-dynamic.js';
+import { CoopModeSystem } from '../../js/coop-mode.js';
+
 export class Game {
     constructor() {
         this.canvas = null;
@@ -59,6 +64,11 @@ export class Game {
         this.settingsSystem = null;
         this.dailyChallenge = null;
         this.extendedFacilitySystem = null;
+
+        // 扩展系统（战役/天气/合作）
+        this.campaignSystem = null;
+        this.weatherSystem = null;
+        this.coopModeSystem = null;
 
         // 帧率独立计时
         this.lastTime = 0;
@@ -120,6 +130,13 @@ export class Game {
                 { name: 'ExtendedFacilitySystem', prop: 'extendedFacilitySystem', init: () => new ExtendedFacilitySystem() }
             ];
 
+            // 扩展系统（战役/天气/合作）- 始终加载
+            const extensionSystems = [
+                { name: 'CampaignSystem', prop: 'campaignSystem', init: (g) => { const sys = new CampaignSystem(g); sys.loadProgress(); return sys; } },
+                { name: 'WeatherSystem', prop: 'weatherSystem', init: (g) => new WeatherSystem(g) },
+                { name: 'CoopModeSystem', prop: 'coopModeSystem', init: (g) => new CoopModeSystem(g) },
+            ];
+
             const initializedSystems = [];
             systems.forEach(sys => {
                 if (typeof window[sys.name] !== 'undefined') {
@@ -143,6 +160,16 @@ export class Game {
             } else {
                 console.log('ℹ️ 未检测到扩展系统，使用基础功能');
             }
+
+            // 初始化扩展系统（始终尝试加载）
+            extensionSystems.forEach(sys => {
+                try {
+                    this[sys.prop] = sys.init(this);
+                    console.log(`✅ 扩展系统 ${sys.name} 初始化成功`);
+                } catch (err) {
+                    console.warn(`⚠️ 扩展系统 ${sys.name} 初始化失败:`, err);
+                }
+            });
         } catch (error) {
             console.error('❌ 系统初始化失败:', error);
         }
@@ -248,6 +275,48 @@ export class Game {
         }
 
         console.log('✅ UI事件绑定完成');
+
+        // 战役模式按钮
+        const campaignBtn = document.getElementById('btn-campaign');
+        if (campaignBtn) {
+            campaignBtn.addEventListener('click', () => {
+                const campaignMenu = document.getElementById('campaign-menu');
+                const mainMenu = document.getElementById('main-menu');
+                if (campaignMenu && this.campaignSystem) {
+                    mainMenu.style.display = 'none';
+                    campaignMenu.style.display = 'flex';
+                    this.campaignSystem.renderCampaignUI(document.getElementById('campaign-content'));
+                }
+            });
+        }
+        const backCampaignBtn = document.getElementById('btn-back-campaign');
+        if (backCampaignBtn) {
+            backCampaignBtn.addEventListener('click', () => {
+                document.getElementById('campaign-menu').style.display = 'none';
+                document.getElementById('main-menu').style.display = 'flex';
+            });
+        }
+
+        // 合作模式按钮
+        const coopBtn = document.getElementById('btn-coop');
+        if (coopBtn) {
+            coopBtn.addEventListener('click', () => {
+                const coopMenu = document.getElementById('coop-menu');
+                const mainMenu = document.getElementById('main-menu');
+                if (coopMenu && this.coopModeSystem) {
+                    mainMenu.style.display = 'none';
+                    coopMenu.style.display = 'flex';
+                    this.coopModeSystem.renderCoopUI(document.getElementById('coop-content'));
+                }
+            });
+        }
+        const backCoopBtn = document.getElementById('btn-back-coop');
+        if (backCoopBtn) {
+            backCoopBtn.addEventListener('click', () => {
+                document.getElementById('coop-menu').style.display = 'none';
+                document.getElementById('main-menu').style.display = 'flex';
+            });
+        }
     }
 
     // 渲染每日挑战UI - 安全版本，防止XSS攻击
