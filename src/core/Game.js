@@ -22,6 +22,7 @@ import { WeatherSystem } from '../../js/weather-dynamic.js';
 import { CoopModeSystem } from '../../js/coop-mode.js';
 import { TechTreeSystem } from '../../js/tech-tree.js';
 import { CommunitySystem } from '../../js/community.js';
+import { PuzzleModeSystem } from '../../js/puzzle-mode.js';
 
 export class Game {
     constructor() {
@@ -73,6 +74,7 @@ export class Game {
         this.coopModeSystem = null;
         this.techTreeSystem = null;
         this.communitySystem = null;
+        this.puzzleModeSystem = null;
 
         // 帧率独立计时
         this.lastTime = 0;
@@ -141,6 +143,7 @@ export class Game {
                 { name: 'CoopModeSystem', prop: 'coopModeSystem', init: (g) => new CoopModeSystem(g) },
                 { name: 'TechTreeSystem', prop: 'techTreeSystem', init: (g) => new TechTreeSystem(g) },
                 { name: 'CommunitySystem', prop: 'communitySystem', init: (g) => new CommunitySystem(g) },
+                { name: 'PuzzleModeSystem', prop: 'puzzleModeSystem', init: (g) => new PuzzleModeSystem(g) },
             ];
 
             const initializedSystems = [];
@@ -364,6 +367,38 @@ export class Game {
         if (backCommunityBtn) {
             backCommunityBtn.addEventListener('click', () => {
                 document.getElementById('community-menu').style.display = 'none';
+                document.getElementById('main-menu').style.display = 'flex';
+            });
+        }
+
+        // 谜题模式按钮
+        const puzzleBtn = document.getElementById('btn-puzzle');
+        if (puzzleBtn) {
+            puzzleBtn.addEventListener('click', () => {
+                const puzzleMenu = document.getElementById('puzzle-menu');
+                const puzzleContent = document.getElementById('puzzle-content');
+                const mainMenu = document.getElementById('main-menu');
+                if (puzzleMenu && puzzleContent && this.puzzleModeSystem) {
+                    mainMenu.style.display = 'none';
+                    puzzleMenu.style.display = 'flex';
+                    // Default to puzzle list tab
+                    this._showPuzzleTab('puzzle-list', puzzleContent);
+                    // Tab switching
+                    const tabs = puzzleMenu.querySelectorAll('#puzzle-tabs .tab-btn');
+                    tabs.forEach(tab => {
+                        tab.onclick = () => {
+                            tabs.forEach(t => t.classList.remove('active'));
+                            tab.classList.add('active');
+                            this._showPuzzleTab(tab.dataset.tab, puzzleContent);
+                        };
+                    });
+                }
+            });
+        }
+        const backPuzzleBtn = document.getElementById('btn-back-puzzle');
+        if (backPuzzleBtn) {
+            backPuzzleBtn.addEventListener('click', () => {
+                document.getElementById('puzzle-menu').style.display = 'none';
                 document.getElementById('main-menu').style.display = 'flex';
             });
         }
@@ -695,12 +730,17 @@ export class Game {
     startBattle() {
         this.state = GAME_STATE.BATTLE;
 
-        // 点燃初始建筑
-        LEVEL_DATA[this.currentLevel].initialFires.forEach(idx => {
-            if (idx >= 0 && idx < this.buildings.length) {
-                this.fireSystem.ignite(this.buildings[idx]);
-            }
-        });
+        // 谜题模式：点燃谜题火焰
+        if (this.currentLevel === -1 && this.puzzleModeSystem) {
+            this.puzzleModeSystem.ignitePuzzleFires();
+        } else {
+            // 点燃初始建筑
+            LEVEL_DATA[this.currentLevel].initialFires.forEach(idx => {
+                if (idx >= 0 && idx < this.buildings.length) {
+                    this.fireSystem.ignite(this.buildings[idx]);
+                }
+            });
+        }
     }
 
     shootWater(angle, power) {
@@ -756,6 +796,13 @@ export class Game {
         this.state = GAME_STATE.WIN;
         const savedBuildings = this.buildings.filter(b => b.health > 0).length;
 
+        // 谜题模式评分
+        if (this.currentLevel === -1 && this.puzzleModeSystem && this.puzzleModeSystem.currentPuzzle) {
+            const puzzle = this.puzzleModeSystem.currentPuzzle;
+            const grade = this.puzzleModeSystem.calculateGrade(puzzle, this.water, this.time);
+            this.puzzleModeSystem.recordResult(puzzle.id, grade, this.water, this.time);
+        }
+
         // 计算奖励
         const stats = this.getLevelStats();
         const rewards = this.upgradeSystem?.calculateRewards(stats);
@@ -804,6 +851,16 @@ export class Game {
     // 添加分数
     addScore(points) {
         this.score += this.balanceSystem?.getModifiedScore(points) || points;
+    }
+
+    // 谜题模式标签切换
+    _showPuzzleTab(tab, container) {
+        if (!this.puzzleModeSystem) return;
+        if (tab === 'puzzle-list') {
+            this.puzzleModeSystem.renderPuzzleSelectUI(container);
+        } else if (tab === 'puzzle-editor') {
+            this.puzzleModeSystem.renderPuzzleEditorUI(container);
+        }
     }
 
     // 获取关卡统计
