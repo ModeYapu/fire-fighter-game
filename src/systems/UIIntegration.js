@@ -80,6 +80,38 @@ function bindNewSystemUIEvents(game) {
     });
     console.log('✅ 设施分类标签绑定成功');
     
+    // ========== 科技树 ==========
+    const techTreeBtn = document.getElementById('btn-tech-tree');
+    if (techTreeBtn) {
+        techTreeBtn.addEventListener('click', () => {
+            showTechTreeMenu(game);
+        });
+        console.log('✅ 科技树按钮绑定成功');
+    }
+    
+    const backTechTreeBtn = document.getElementById('btn-back-tech-tree');
+    if (backTechTreeBtn) {
+        backTechTreeBtn.addEventListener('click', () => {
+            hideTechTreeMenu();
+        });
+    }
+    
+    // ========== 社区 ==========
+    const communityBtn = document.getElementById('btn-community');
+    if (communityBtn) {
+        communityBtn.addEventListener('click', () => {
+            showCommunityMenu(game);
+        });
+        console.log('✅ 社区按钮绑定成功');
+    }
+    
+    const backCommunityBtn = document.getElementById('btn-back-community');
+    if (backCommunityBtn) {
+        backCommunityBtn.addEventListener('click', () => {
+            hideCommunityMenu();
+        });
+    }
+    
     console.log('🎉 UI事件绑定完成');
 }
 
@@ -170,6 +202,50 @@ function showDailyChallengeMenu(game) {
 
 function hideDailyChallengeMenu() {
     document.getElementById('daily-menu').style.display = 'none';
+    document.getElementById('main-menu').style.display = 'flex';
+}
+
+function showTechTreeMenu(game) {
+    const techTreeMenu = document.getElementById('tech-tree-menu');
+    const techTreeContent = document.getElementById('tech-tree-content');
+    const mainMenu = document.getElementById('main-menu');
+    
+    if (techTreeMenu && techTreeContent) {
+        mainMenu.style.display = 'none';
+        techTreeMenu.style.display = 'flex';
+        
+        if (game.techTreeSystem) {
+            game.techTreeSystem.renderTechTreeUI(techTreeContent);
+        } else {
+            techTreeContent.innerHTML = '<p style="color: #fff; text-align: center; padding: 20px;">科技树系统未加载</p>';
+        }
+    }
+}
+
+function hideTechTreeMenu() {
+    document.getElementById('tech-tree-menu').style.display = 'none';
+    document.getElementById('main-menu').style.display = 'flex';
+}
+
+function showCommunityMenu(game) {
+    const communityMenu = document.getElementById('community-menu');
+    const communityContent = document.getElementById('community-content');
+    const mainMenu = document.getElementById('main-menu');
+    
+    if (communityMenu && communityContent) {
+        mainMenu.style.display = 'none';
+        communityMenu.style.display = 'flex';
+        
+        if (game.communitySystem) {
+            game.communitySystem.renderCommunityUI(communityContent);
+        } else {
+            communityContent.innerHTML = '<p style="color: #fff; text-align: center; padding: 20px;">社区系统未加载</p>';
+        }
+    }
+}
+
+function hideCommunityMenu() {
+    document.getElementById('community-menu').style.display = 'none';
     document.getElementById('main-menu').style.display = 'flex';
 }
 
