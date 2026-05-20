@@ -97,12 +97,11 @@ describe('WaterSystem', () => {
 
   test('水滴出界应该失效', () => {
     const droplet = new WaterDroplet(100, 100, 10, 10, 5);
-    droplet.canvasHeight = 600;
-    
-    // 移到画布外
+
+    // 移到画布外 - update方法现在需要canvasWidth和canvasHeight参数
     droplet.y = 700;
-    droplet.update();
-    
+    droplet.update(0, 800, 600); // wind, canvasWidth, canvasHeight
+
     expect(droplet.active).toBe(false);
   });
 

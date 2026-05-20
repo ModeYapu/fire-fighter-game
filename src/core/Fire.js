@@ -47,26 +47,37 @@ export class Fire {
     }
 
     trySpread(game) {
-        // 检查相邻建筑
+        // 安全检查
+        if (!game || !game.buildings || !game.fires || !game.fireSystem) {
+            return;
+        }
+
+        const spreadDistance = this.radius + 80;
+        const spreadDistanceSquared = spreadDistance * spreadDistance;
+
+        // 检查相邻建筑（优化：避免不必要的sqrt计算）
         game.buildings.forEach(building => {
-            if (building === this.building) return;
-            if (building.health <= 0) return;
+            if (!building || building === this.building || building.health <= 0) return;
 
             // 检查是否已经有火
-            const hasFire = game.fires.some(f => f.building === building && f.intensity > 0);
+            const hasFire = game.fires.some(f => f && f.building === building && f.intensity > 0);
             if (hasFire) return;
 
-            // 计算距离
+            // 计算距离（使用平方距离避免sqrt）
             const dx = building.x - this.building.x;
             const dy = building.y - this.building.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+            const distanceSquared = dx * dx + dy * dy;
 
             // 如果距离足够近，有概率点燃
-            if (distance < this.radius + 80) {
-                const probability = FIRE_CONFIG.SPREAD_PROBABILITY * this.intensity * (1 - building.fireResistance);
+            if (distanceSquared < spreadDistanceSquared) {
+                const probability = FIRE_CONFIG.SPREAD_PROBABILITY * this.intensity * (1 - (building.fireResistance || 0));
 
                 if (Math.random() < probability) {
-                    game.fireSystem.ignite(building);
+                    try {
+                        game.fireSystem.ignite(building);
+                    } catch (error) {
+                        console.warn('Fire spread failed:', error);
+                    }
                 }
             }
         });

@@ -3,11 +3,25 @@
  * 管理HUD、菜单、关卡选择、结果显示等所有UI元素
  */
 import { GAME_STATE, WATER_CONFIG, STORAGE_KEYS, LEVEL_DATA } from '../utils/constants.js';
+import { SecureStorage } from '../utils/storage.js';
 
 export class UIManager {
     constructor() {
         this.elements = {};
         this.game = null;
+
+        // DOM更新优化 - 缓存上次值，避免不必要的DOM操作
+        this.lastHUDValues = {
+            time: -1,
+            water: -1,
+            score: -1,
+            angle: -1,
+            power: -1
+        };
+
+        // 更新节流 - 限制每秒更新次数
+        this.lastUpdateTime = 0;
+        this.updateInterval = 100; // 最少间隔100ms
     }
 
     init(game) {
@@ -101,12 +115,28 @@ export class UIManager {
         LEVEL_DATA.forEach((level, index) => {
             const card = document.createElement('div');
             card.className = 'level-card';
-            card.innerHTML = `
-                <div class="level-number">${index + 1}</div>
-                <div class="level-name">${level.name}</div>
-                <div class="level-desc">${level.description}</div>
-                <div class="level-stars">${'⭐'.repeat(this.getLevelStars(index))}</div>
-            `;
+
+            // 使用安全的DOM操作防止XSS攻击
+            const numberDiv = document.createElement('div');
+            numberDiv.className = 'level-number';
+            numberDiv.textContent = index + 1;
+
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'level-name';
+            nameDiv.textContent = level.name;
+
+            const descDiv = document.createElement('div');
+            descDiv.className = 'level-desc';
+            descDiv.textContent = level.description;
+
+            const starsDiv = document.createElement('div');
+            starsDiv.className = 'level-stars';
+            starsDiv.textContent = '⭐'.repeat(this.getLevelStars(index));
+
+            card.appendChild(numberDiv);
+            card.appendChild(nameDiv);
+            card.appendChild(descDiv);
+            card.appendChild(starsDiv);
 
             card.addEventListener('click', () => {
                 if (this.isLevelUnlocked(index)) {
@@ -123,13 +153,13 @@ export class UIManager {
         // 第一关始终解锁
         if (index === 0) return true;
 
-        // 检查前一关是否通关
-        const progress = JSON.parse(localStorage.getItem(STORAGE_KEYS.PROGRESS) || '{}');
+        // 使用安全存储工具
+        const progress = SecureStorage.getItem(STORAGE_KEYS.PROGRESS, {}, SecureStorage.validators.progress);
         return progress[index - 1] && progress[index - 1].completed;
     }
 
     getLevelStars(index) {
-        const progress = JSON.parse(localStorage.getItem(STORAGE_KEYS.PROGRESS) || '{}');
+        const progress = SecureStorage.getItem(STORAGE_KEYS.PROGRESS, {}, SecureStorage.validators.progress);
         return progress[index] ? progress[index].stars : 0;
     }
 
@@ -202,23 +232,68 @@ export class UIManager {
     }
 
     updateHUD(time, water, score, angle, power) {
-        this.elements.timeDisplay.textContent = this.formatTime(time);
-        this.elements.waterDisplay.textContent = Math.floor(water);
-        this.elements.scoreDisplay.textContent = Math.floor(score);
-        this.elements.angleDisplay.textContent = `${angle}°`;
-        this.elements.powerDisplay.textContent = `${power}%`;
+        // 节流检查 - 避免过于频繁的DOM更新
+        const now = Date.now();
+        if (now - this.lastUpdateTime < this.updateInterval) {
+            return;
+        }
+        this.lastUpdateTime = now;
 
-        // 更新进度条
-        this.elements.angleFill.style.width = `${(angle / WATER_CONFIG.MAX_ANGLE) * 100}%`;
-        this.elements.powerFill.style.width = `${power}%`;
+        // 优化：只有当值真正改变时才更新DOM
+        const formattedTime = this.formatTime(time);
+        if (formattedTime !== this.lastHUDValues.time) {
+            this.elements.timeDisplay.textContent = formattedTime;
+            this.lastHUDValues.time = formattedTime;
+        }
 
-        // 水量警告
-        if (water < 200) {
-            this.elements.waterDisplay.classList.add('danger');
-        } else if (water < 500) {
-            this.elements.waterDisplay.classList.add('warning');
-        } else {
-            this.elements.waterDisplay.classList.remove('warning', 'danger');
+        const floorWater = Math.floor(water);
+        if (floorWater !== this.lastHUDValues.water) {
+            this.elements.waterDisplay.textContent = floorWater;
+            this.lastHUDValues.water = floorWater;
+
+            // 水量警告 - 优化classList操作
+            this.updateWaterWarning(water);
+        }
+
+        const floorScore = Math.floor(score);
+        if (floorScore !== this.lastHUDValues.score) {
+            this.elements.scoreDisplay.textContent = floorScore;
+            this.lastHUDValues.score = floorScore;
+        }
+
+        const angleStr = `${angle}°`;
+        if (angleStr !== this.lastHUDValues.angle) {
+            this.elements.angleDisplay.textContent = angleStr;
+            this.lastHUDValues.angle = angleStr;
+
+            // 更新角度进度条
+            this.elements.angleFill.style.width = `${(angle / WATER_CONFIG.MAX_ANGLE) * 100}%`;
+        }
+
+        const powerStr = `${power}%`;
+        if (powerStr !== this.lastHUDValues.power) {
+            this.elements.powerDisplay.textContent = powerStr;
+            this.lastHUDValues.power = powerStr;
+
+            // 更新力度进度条
+            this.elements.powerFill.style.width = `${power}%`;
+        }
+    }
+
+    // 优化水量警告更新逻辑
+    updateWaterWarning(water) {
+        const waterDisplay = this.elements.waterDisplay;
+        const hasWarning = waterDisplay.classList.contains('warning');
+        const hasDanger = waterDisplay.classList.contains('danger');
+
+        if (water < 200 && !hasDanger) {
+            waterDisplay.classList.remove('warning');
+            waterDisplay.classList.add('danger');
+        } else if (water >= 200 && water < 500 && !hasWarning) {
+            waterDisplay.classList.remove('danger');
+            waterDisplay.classList.add('warning');
+        } else if (water >= 500 && (hasWarning || hasDanger)) {
+            waterDisplay.classList.remove('warning', 'danger');
         }
     }
 
@@ -262,7 +337,7 @@ export class UIManager {
     }
 
     saveProgress(levelIndex, stars, score) {
-        const progress = JSON.parse(localStorage.getItem(STORAGE_KEYS.PROGRESS) || '{}');
+        const progress = SecureStorage.getItem(STORAGE_KEYS.PROGRESS, {}, SecureStorage.validators.progress);
 
         if (!progress[levelIndex] || progress[levelIndex].stars < stars) {
             progress[levelIndex] = {
@@ -270,7 +345,7 @@ export class UIManager {
                 stars: stars,
                 score: score
             };
-            localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(progress));
+            SecureStorage.setItem(STORAGE_KEYS.PROGRESS, progress, SecureStorage.validators.progress);
         }
     }
 

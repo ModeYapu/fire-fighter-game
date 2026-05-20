@@ -6,14 +6,39 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 40%, #24243e 70%, #1a1a2e 100%);
+    background-attachment: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     overflow: hidden;
     color: #fff;
+}
+
+/* 全局滚动条美化 */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(52, 152, 219, 0.4);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(52, 152, 219, 0.6);
+}
+
+/* 全局过渡 — 按钮基础 */
+button {
+    font-family: inherit;
 }
 
 #game-container {
@@ -28,7 +53,10 @@ body {
 #game-canvas {
     border: none;
     border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 60px rgba(231, 76, 60, 0.2);
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.5),
+        0 0 60px rgba(231, 76, 60, 0.15),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
     background: #1a1a2e;
     display: block;
 }
@@ -40,26 +68,115 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(180deg, rgba(15, 12, 41, 0.95) 0%, rgba(48, 43, 99, 0.95) 100%);
+    background: linear-gradient(160deg, rgba(15, 12, 41, 0.97) 0%, rgba(48, 43, 99, 0.95) 50%, rgba(26, 26, 46, 0.97) 100%);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 100;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* 优雅的滚动 */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    /* 菜单进场动画 */
+    animation: menuFadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes menuFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 游戏标题Logo */
+.game-logo-container {
+    text-align: center;
+    margin-bottom: 30px;
+    animation: logoFadeIn 0.8s ease-out;
+}
+
+.game-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 8px;
+}
+
+.logo-icon {
+    font-size: 64px;
+    filter: drop-shadow(0 0 20px rgba(231, 76, 60, 0.6));
+    animation: logoBounce 2s ease-in-out infinite;
+}
+
+.logo-title {
+    font-size: 48px;
+    font-weight: 900;
+    margin: 0;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 25%, #FFD23F 50%, #F7931E 75%, #FF6B35 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: logoShine 3s linear infinite, titlePulse 2s ease-in-out infinite;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))
+            drop-shadow(0 0 30px rgba(255, 107, 53, 0.5));
+}
+
+.logo-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    font-weight: 400;
+    margin-top: 0;
+}
+
+@keyframes logoShine {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+@keyframes logoBounce {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-8px) rotate(5deg); }
+}
+
+@keyframes logoFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .menu-title {
     font-size: 56px;
     font-weight: 800;
     margin-bottom: 8px;
-    text-shadow: 0 0 30px rgba(231, 76, 60, 0.8), 0 0 60px rgba(231, 76, 60, 0.4);
+    text-shadow:
+        0 0 30px rgba(231, 76, 60, 0.8),
+        0 0 60px rgba(231, 76, 60, 0.4),
+        0 4px 12px rgba(0, 0, 0, 0.6);
     animation: titlePulse 2s ease-in-out infinite;
+    letter-spacing: 2px;
 }
 
 @keyframes titlePulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.02); }
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.02); filter: brightness(1.1); }
 }
 
 .menu-title .fire-icon {
@@ -68,26 +185,33 @@ body {
 }
 
 @keyframes fireFlicker {
-    0%, 100% { opacity: 1; transform: translateY(0); }
-    50% { opacity: 0.8; transform: translateY(-3px); }
+    0%, 100% { opacity: 1; transform: translateY(0) rotate(0deg); }
+    50% { opacity: 0.8; transform: translateY(-3px) rotate(3deg); }
 }
 
 .menu-subtitle {
     font-size: 20px;
     color: #a0a0c0;
     margin-bottom: 40px;
-    letter-spacing: 2px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-weight: 300;
 }
 
-/* 玩法说明卡片 */
+/* 玩法说明卡片 — 毛玻璃 */
 .tutorial-card {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
     padding: 24px 32px;
     margin-bottom: 32px;
-    max-width: 400px;
-    backdrop-filter: blur(10px);
+    max-width: 420px;
+    width: 90%;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .tutorial-card h3 {
@@ -97,6 +221,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    font-weight: 600;
 }
 
 .tutorial-step {
@@ -106,7 +231,7 @@ body {
     margin-bottom: 12px;
     font-size: 14px;
     color: #d0d0e0;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .tutorial-step:last-child {
@@ -123,12 +248,15 @@ body {
     justify-content: center;
     font-size: 14px;
     flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
 }
 
+/* 菜单按钮组 */
 .menu-buttons {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    padding: 0 20px;
 }
 
 .menu-btn {
@@ -140,38 +268,79 @@ body {
     font-weight: 600;
     color: #fff;
     cursor: pointer;
-    transition: all 0.3s ease;
     min-width: 220px;
-    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        0 4px 15px rgba(231, 76, 60, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    /* 按钮涟漪 */
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 按钮光泽效果 */
+.menu-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: left 0.5s ease;
+}
+
+.menu-btn:hover::before {
+    left: 100%;
 }
 
 .menu-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(231, 76, 60, 0.6);
+    transform: translateY(-3px);
+    box-shadow:
+        0 8px 30px rgba(231, 76, 60, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .menu-btn:active {
-    transform: translateY(0);
+    transform: translateY(0px) scale(0.97);
+    box-shadow:
+        0 2px 8px rgba(231, 76, 60, 0.3),
+        inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .menu-btn.secondary {
     background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+    box-shadow:
+        0 4px 15px rgba(52, 152, 219, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .menu-btn.secondary:hover {
-    box-shadow: 0 6px 25px rgba(52, 152, 219, 0.6);
+    box-shadow:
+        0 8px 30px rgba(52, 152, 219, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-/* ==================== 游戏内HUD ==================== */
+.menu-btn.secondary:active {
+    box-shadow:
+        0 2px 8px rgba(52, 152, 219, 0.3),
+        inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ==================== 游戏内HUD — 毛玻璃面板 ==================== */
 .hud-panel {
     position: absolute;
-    background: rgba(0, 0, 0, 0.6);
-    border: none;
-    border-radius: 12px;
+    background: rgba(15, 15, 35, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
     padding: 12px 20px;
     pointer-events: none;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 /* 顶部状态栏 */
@@ -181,8 +350,10 @@ body {
     transform: translateX(-50%);
     display: flex;
     gap: 40px;
-    background: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(52, 73, 94, 0.9));
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.75), rgba(52, 73, 94, 0.75));
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .hud-item {
@@ -194,10 +365,11 @@ body {
 
 .hud-label {
     font-size: 11px;
-    color: #95a5a6;
+    color: #8e9aaf;
     margin-bottom: 4px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
+    font-weight: 500;
 }
 
 .hud-value {
@@ -207,6 +379,7 @@ body {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    transition: all 0.3s ease;
 }
 
 .hud-value.warning {
@@ -237,7 +410,7 @@ body {
     display: flex;
     gap: 30px;
     align-items: center;
-    background: linear-gradient(135deg, rgba(44, 62, 80, 0.9), rgba(52, 73, 94, 0.9));
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.75), rgba(52, 73, 94, 0.75));
 }
 
 .control-item {
@@ -250,9 +423,10 @@ body {
 .control-bar {
     width: 140px;
     height: 8px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 4px;
     overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .control-fill {
@@ -260,6 +434,7 @@ body {
     background: linear-gradient(90deg, #3498db, #2ecc71);
     border-radius: 4px;
     transition: width 0.15s ease;
+    box-shadow: 0 0 8px rgba(46, 204, 113, 0.4);
 }
 
 /* ==================== 设施侧边栏 ==================== */
@@ -271,54 +446,8 @@ body {
     flex-direction: column;
     gap: 12px;
     pointer-events: auto;
-    background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 73, 94, 0.95));
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.8), rgba(52, 73, 94, 0.8));
     padding: 18px 14px;
-}
-
-.facility-btn {
-    pointer-events: auto;
-    background: rgba(52, 152, 219, 0.3);
-    border: 2px solid rgba(52, 152, 219, 0.6);
-    border-radius: 14px;
-    padding: 16px 20px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: center;
-    min-width: 100px;
-}
-
-.facility-btn:hover {
-    background: rgba(52, 152, 219, 0.5);
-    transform: scale(1.05);
-}
-
-.facility-btn.selected {
-    background: rgba(46, 204, 113, 0.5);
-    border-color: #2ecc71;
-    box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
-}
-
-.facility-btn.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.facility-icon {
-    font-size: 32px;
-    margin-bottom: 4px;
-}
-
-.facility-name {
-    font-size: 12px;
-    color: #bdc3c7;
-    font-weight: 500;
-}
-
-.facility-cost {
-    font-size: 14px;
-    color: #f39c12;
-    font-weight: 700;
-    margin-top: 2px;
 }
 
 /* ==================== 准备阶段提示 ==================== */
@@ -330,13 +459,27 @@ body {
     font-size: 16px;
     color: #fff;
     text-align: center;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(15, 15, 35, 0.7);
     padding: 20px 30px;
     border-radius: 16px;
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(39, 174, 96, 0.5);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(39, 174, 96, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     z-index: 10;
     pointer-events: auto;
+    animation: slideDown 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
 }
 
 #prepare-timer {
@@ -369,39 +512,100 @@ body {
 #level-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
+    gap: 16px;
     margin-bottom: 30px;
     padding: 0 20px;
-    max-height: 50vh;
+    max-height: 55vh;
     overflow-y: auto;
+    max-width: 600px;
 }
 
 .level-card {
-    background: linear-gradient(135deg, rgba(52, 152, 219, 0.3), rgba(41, 128, 185, 0.3));
-    border: 2px solid rgba(52, 152, 219, 0.5);
-    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(52, 152, 219, 0.3);
+    border-radius: 18px;
     padding: 20px;
     cursor: pointer;
-    transition: all 0.3s ease;
     min-width: 140px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    /* 入场动画 */
+    animation: cardFadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.level-card:nth-child(1)  { animation-delay: 0.02s; }
+.level-card:nth-child(2)  { animation-delay: 0.04s; }
+.level-card:nth-child(3)  { animation-delay: 0.06s; }
+.level-card:nth-child(4)  { animation-delay: 0.08s; }
+.level-card:nth-child(5)  { animation-delay: 0.10s; }
+.level-card:nth-child(6)  { animation-delay: 0.12s; }
+.level-card:nth-child(7)  { animation-delay: 0.14s; }
+.level-card:nth-child(8)  { animation-delay: 0.16s; }
+.level-card:nth-child(9)  { animation-delay: 0.18s; }
+.level-card:nth-child(10) { animation-delay: 0.20s; }
+.level-card:nth-child(11) { animation-delay: 0.22s; }
+.level-card:nth-child(12) { animation-delay: 0.24s; }
+
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 卡片顶部装饰线 */
+.level-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    border-radius: 18px 18px 0 0;
 }
 
 .level-card:hover:not(.locked) {
-    background: linear-gradient(135deg, rgba(52, 152, 219, 0.5), rgba(41, 128, 185, 0.5));
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+    background: rgba(52, 152, 219, 0.15);
+    border-color: rgba(52, 152, 219, 0.5);
+    transform: translateY(-6px);
+    box-shadow:
+        0 12px 35px rgba(52, 152, 219, 0.25),
+        0 0 0 1px rgba(52, 152, 219, 0.1);
 }
 
 .level-card.locked {
-    opacity: 0.4;
+    opacity: 0.35;
     cursor: not-allowed;
     filter: grayscale(0.5);
 }
 
+.level-card.locked::before {
+    background: linear-gradient(90deg, #95a5a6, #7f8c8d);
+}
+
 .level-card.completed {
-    border-color: #2ecc71;
-    background: linear-gradient(135deg, rgba(46, 204, 113, 0.3), rgba(39, 174, 96, 0.3));
+    border-color: rgba(46, 204, 113, 0.5);
+}
+
+.level-card.completed::before {
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+}
+
+.level-card.completed:hover:not(.locked) {
+    background: rgba(46, 204, 113, 0.15);
+    box-shadow:
+        0 12px 35px rgba(46, 204, 113, 0.2),
+        0 0 0 1px rgba(46, 204, 113, 0.1);
 }
 
 .level-number {
@@ -429,13 +633,21 @@ body {
 .level-stars {
     font-size: 18px;
     color: #f39c12;
+    filter: drop-shadow(0 0 4px rgba(243, 156, 18, 0.5));
 }
 
 /* ==================== 结果界面 ==================== */
 .result-title {
-    font-size: 42px;
+    font-size: 48px;
     font-weight: 800;
     margin-bottom: 16px;
+    animation: resultBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes resultBounce {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 .result-title.win {
@@ -458,17 +670,33 @@ body {
     font-size: 56px;
     margin-bottom: 24px;
     filter: drop-shadow(0 0 10px rgba(243, 156, 18, 0.6));
+    animation: starsAppear 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+
+@keyframes starsAppear {
+    from {
+        transform: scale(0) rotate(-30deg);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
 }
 
 .result-stats {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
     margin-bottom: 32px;
     text-align: center;
-    background: rgba(0, 0, 0, 0.3);
-    padding: 20px 40px;
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 24px 48px;
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .result-stat {
@@ -479,7 +707,7 @@ body {
 .result-stat span {
     color: #3498db;
     font-weight: 700;
-    font-size: 20px;
+    font-size: 22px;
 }
 
 /* ==================== 移动端控制按钮 ==================== */
@@ -507,8 +735,8 @@ body {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    border: 3px solid rgba(52, 152, 219, 0.8);
-    background: linear-gradient(135deg, rgba(52, 152, 219, 0.6), rgba(41, 128, 185, 0.6));
+    border: 2px solid rgba(52, 152, 219, 0.5);
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.5), rgba(41, 128, 185, 0.5));
     color: #fff;
     font-size: 32px;
     font-weight: bold;
@@ -519,22 +747,25 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.1s ease;
+    transition: all 0.15s ease;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    -webkit-tap-highlight-color: transparent;
 }
 
 .ctrl-btn:active {
-    background: linear-gradient(135deg, rgba(52, 152, 219, 0.9), rgba(41, 128, 185, 0.9));
-    transform: scale(0.92);
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.8), rgba(41, 128, 185, 0.8));
+    transform: scale(0.9);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .fire-btn {
     width: 140px;
     height: 80px;
     border-radius: 40px;
-    background: linear-gradient(135deg, rgba(231, 76, 60, 0.85), rgba(192, 57, 43, 0.85));
-    border-color: rgba(231, 76, 60, 0.9);
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.8), rgba(192, 57, 43, 0.8));
+    border-color: rgba(231, 76, 60, 0.7);
     font-size: 20px;
     font-weight: 700;
     gap: 8px;
@@ -563,13 +794,40 @@ body {
         border-radius: 0;
     }
 
+    .menu-overlay {
+        padding: 20px 0;
+    }
+
+    .game-logo {
+        gap: 10px;
+    }
+
+    .logo-icon {
+        font-size: 42px;
+    }
+
+    .logo-title {
+        font-size: 28px;
+        letter-spacing: 1px;
+    }
+
+    .logo-subtitle {
+        font-size: 11px;
+        letter-spacing: 3px;
+    }
+
     .menu-title {
-        font-size: 40px;
+        font-size: 36px;
+    }
+
+    .menu-subtitle {
+        font-size: 14px;
+        margin-bottom: 24px;
     }
 
     .tutorial-card {
-        margin: 0 20px 24px;
-        padding: 20px;
+        margin: 0 16px 20px;
+        padding: 18px;
     }
 
     .tutorial-card h3 {
@@ -581,9 +839,9 @@ body {
     }
 
     .menu-btn {
-        padding: 14px 40px;
+        padding: 14px 36px;
         font-size: 16px;
-        min-width: 200px;
+        min-width: 190px;
     }
 
     #top-hud {
@@ -611,42 +869,25 @@ body {
         gap: 10px;
     }
 
-    .facility-btn {
-        padding: 12px 14px;
-        min-width: 85px;
-    }
-
-    .facility-icon {
-        font-size: 30px;
-    }
-
-    .facility-name {
-        font-size: 12px;
-    }
-
-    .facility-cost {
-        font-size: 14px;
-    }
-
     /* 移动端控制按钮调整 */
     .mobile-controls {
-        bottom: 25px;
-        gap: 14px;
+        bottom: 20px;
+        gap: 10px;
     }
-    
+
     .control-row {
-        gap: 14px;
+        gap: 10px;
     }
-    
+
     .ctrl-btn {
-        width: 75px;
-        height: 75px;
+        width: 70px;
+        height: 70px;
         font-size: 28px;
     }
-    
+
     .fire-btn {
-        width: 130px;
-        height: 75px;
+        width: 120px;
+        height: 70px;
         font-size: 18px;
     }
 
@@ -671,7 +912,7 @@ body {
 
     #prepare-message {
         font-size: 14px;
-        padding: 15px 20px;
+        padding: 14px 18px;
         top: 100px;
     }
 
@@ -682,12 +923,51 @@ body {
     .result-stars {
         font-size: 42px;
     }
+
+    .result-stats {
+        padding: 18px 28px;
+    }
 }
 
 /* 超小屏幕 */
 @media (max-width: 400px) {
+    .game-logo {
+        gap: 6px;
+        flex-direction: column;
+    }
+
+    .logo-icon {
+        font-size: 36px;
+    }
+
+    .logo-title {
+        font-size: 20px;
+        letter-spacing: 0.5px;
+    }
+
+    .logo-subtitle {
+        font-size: 9px;
+        letter-spacing: 2px;
+    }
+
     .menu-title {
-        font-size: 32px;
+        font-size: 28px;
+    }
+
+    .menu-subtitle {
+        font-size: 12px;
+        margin-bottom: 16px;
+    }
+
+    .tutorial-card {
+        margin: 0 12px 16px;
+        padding: 14px;
+    }
+
+    .menu-btn {
+        padding: 12px 28px;
+        font-size: 14px;
+        min-width: 170px;
     }
 
     #top-hud {
@@ -701,15 +981,15 @@ body {
 
     /* 超小屏幕控制按钮保持可操作 */
     .ctrl-btn {
-        width: 68px;
-        height: 68px;
-        font-size: 26px;
+        width: 62px;
+        height: 62px;
+        font-size: 24px;
     }
 
     .fire-btn {
-        width: 110px;
-        height: 68px;
-        font-size: 16px;
+        width: 105px;
+        height: 62px;
+        font-size: 15px;
     }
 
     /* 超小屏幕侧边栏保持在顶部 */
@@ -719,26 +999,46 @@ body {
         gap: 8px;
     }
 
-    .facility-btn {
-        padding: 10px 12px;
-        min-width: 75px;
+    #level-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
     }
 
-    .facility-icon {
+    .level-card {
+        padding: 12px;
+    }
+
+    .level-number {
         font-size: 26px;
-    }
-
-    .facility-name {
-        font-size: 11px;
-    }
-
-    .facility-cost {
-        font-size: 11px;
     }
 }
 
 /* 横屏模式 */
 @media (max-height: 500px) and (orientation: landscape) {
+    .menu-overlay {
+        padding: 10px 0;
+    }
+
+    .menu-title {
+        font-size: 32px;
+        margin-bottom: 4px;
+    }
+
+    .menu-subtitle {
+        font-size: 12px;
+        margin-bottom: 12px;
+    }
+
+    .tutorial-card {
+        display: none;
+    }
+
+    .menu-btn {
+        padding: 10px 30px;
+        font-size: 14px;
+        min-width: 180px;
+    }
+
     #game-canvas {
         height: 100vh;
         width: auto;
@@ -774,18 +1074,45 @@ body {
     bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    padding: 10px 20px;
-    border-radius: 20px;
+    background: rgba(15, 15, 35, 0.75);
+    padding: 10px 24px;
+    border-radius: 24px;
     font-size: 14px;
     color: #3498db;
     pointer-events: none;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(52, 152, 219, 0.2);
     animation: fadeInOut 3s ease-in-out;
 }
 
 @keyframes fadeInOut {
-    0% { opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { opacity: 0; }
+    0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    80% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+}
+
+/* ==================== Tab按钮样式（排行榜等） ==================== */
+.tab-btn {
+    padding: 8px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #95a5a6;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
 }

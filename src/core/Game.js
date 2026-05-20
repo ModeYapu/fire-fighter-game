@@ -103,83 +103,46 @@ export class Game {
     // 🚀 初始化所有新系统
     initNewSystems() {
         try {
-            // 检查全局系统是否可用
-            if (typeof RescueSystem !== 'undefined') {
-                this.rescueSystem = new RescueSystem(this);
-                console.log('✅ 救援系统已初始化');
+            // 检查全局系统是否可用（向后兼容）
+            const systems = [
+                { name: 'RescueSystem', prop: 'rescueSystem', init: (g) => new RescueSystem(g) },
+                { name: 'UpgradeSystem', prop: 'upgradeSystem', init: (g) => new UpgradeSystem(g) },
+                { name: 'SpecialEventSystem', prop: 'specialEventSystem', init: (g) => new SpecialEventSystem(g) },
+                { name: 'VehicleSystem', prop: 'vehicleSystem', init: (g) => new VehicleSystem(g) },
+                { name: 'GameOptimizer', prop: 'optimizer', init: (g) => new GameOptimizer(g) },
+                { name: 'HintSystem', prop: 'hintSystem', init: (g) => { const sys = new HintSystem(g); sys.initHints(); return sys; } },
+                { name: 'AutoSaveSystem', prop: 'autoSaveSystem', init: (g) => new AutoSaveSystem(g) },
+                { name: 'BalanceSystem', prop: 'balanceSystem', init: (g) => new BalanceSystem(g) },
+                { name: 'EnhancedAudioSystem', prop: 'enhancedAudio', init: () => { const sys = new EnhancedAudioSystem(); sys.init(); return sys; } },
+                { name: 'VisualEffectsSystem', prop: 'visualEffects', init: (g) => new VisualEffectsSystem(g) },
+                { name: 'SettingsSystem', prop: 'settingsSystem', init: (g) => { const sys = new SettingsSystem(g); sys.loadSettings(); sys.applySettings(); return sys; } },
+                { name: 'DailyChallengeSystem', prop: 'dailyChallenge', init: (g) => { const sys = new DailyChallengeSystem(g); sys.loadDailyChallenge(); sys.generateDailyChallenge(); return sys; } },
+                { name: 'ExtendedFacilitySystem', prop: 'extendedFacilitySystem', init: () => new ExtendedFacilitySystem() }
+            ];
+
+            const initializedSystems = [];
+            systems.forEach(sys => {
+                if (typeof window[sys.name] !== 'undefined') {
+                    try {
+                        this[sys.prop] = sys.init(this);
+                        initializedSystems.push(sys.name);
+                    } catch (err) {
+                        console.warn(`⚠️ ${sys.name} 初始化失败:`, err);
+                    }
+                }
+            });
+
+            if (initializedSystems.length > 0) {
+                console.log('✅ 已初始化系统:', initializedSystems.join(', '));
+
+                // 应用所有升级和车辆属性
+                this.upgradeSystem?.applyAllUpgrades();
+                this.vehicleSystem?.applyVehicleStats();
+
+                console.log('🎉 所有新系统初始化完成');
+            } else {
+                console.log('ℹ️ 未检测到扩展系统，使用基础功能');
             }
-
-            if (typeof UpgradeSystem !== 'undefined') {
-                this.upgradeSystem = new UpgradeSystem(this);
-                console.log('✅ 升级系统已初始化');
-            }
-
-            if (typeof SpecialEventSystem !== 'undefined') {
-                this.specialEventSystem = new SpecialEventSystem(this);
-                console.log('✅ 特殊事件系统已初始化');
-            }
-
-            if (typeof VehicleSystem !== 'undefined') {
-                this.vehicleSystem = new VehicleSystem(this);
-                console.log('✅ 车辆系统已初始化');
-            }
-
-            if (typeof GameOptimizer !== 'undefined') {
-                this.optimizer = new GameOptimizer(this);
-                console.log('✅ 性能优化器已初始化');
-            }
-
-            if (typeof HintSystem !== 'undefined') {
-                this.hintSystem = new HintSystem(this);
-                this.hintSystem.initHints();
-                console.log('✅ 提示系统已初始化');
-            }
-
-            if (typeof AutoSaveSystem !== 'undefined') {
-                this.autoSaveSystem = new AutoSaveSystem(this);
-                console.log('✅ 自动存档系统已初始化');
-            }
-
-            if (typeof BalanceSystem !== 'undefined') {
-                this.balanceSystem = new BalanceSystem(this);
-                console.log('✅ 平衡系统已初始化');
-            }
-
-            if (typeof EnhancedAudioSystem !== 'undefined') {
-                this.enhancedAudio = new EnhancedAudioSystem();
-                this.enhancedAudio.init();
-                console.log('✅ 增强音效系统已初始化');
-            }
-
-            if (typeof VisualEffectsSystem !== 'undefined') {
-                this.visualEffects = new VisualEffectsSystem(this);
-                console.log('✅ 视觉效果系统已初始化');
-            }
-
-            if (typeof SettingsSystem !== 'undefined') {
-                this.settingsSystem = new SettingsSystem(this);
-                this.settingsSystem.loadSettings();
-                this.settingsSystem.applySettings();
-                console.log('✅ 设置系统已初始化');
-            }
-
-            if (typeof DailyChallengeSystem !== 'undefined') {
-                this.dailyChallenge = new DailyChallengeSystem(this);
-                this.dailyChallenge.loadDailyChallenge();
-                this.dailyChallenge.generateDailyChallenge();
-                console.log('✅ 每日挑战系统已初始化');
-            }
-
-            if (typeof ExtendedFacilitySystem !== 'undefined') {
-                this.extendedFacilitySystem = new ExtendedFacilitySystem();
-                console.log('✅ 扩展设施系统已初始化');
-            }
-
-            // 应用所有升级和车辆属性
-            this.upgradeSystem?.applyAllUpgrades();
-            this.vehicleSystem?.applyVehicleStats();
-
-            console.log('🎉 所有新系统初始化完成');
         } catch (error) {
             console.error('❌ 系统初始化失败:', error);
         }
@@ -287,57 +250,66 @@ export class Game {
         console.log('✅ UI事件绑定完成');
     }
 
-    // 渲染每日挑战UI
+    // 渲染每日挑战UI - 安全版本，防止XSS攻击
     renderDailyChallengeUI(container) {
         const challenge = this.dailyChallenge?.getChallengeProgress();
-        
+
         if (!challenge) {
-            container.innerHTML = '<p>暂无每日挑战</p>';
+            this.setSafeHTML(container, '<p>暂无每日挑战</p>');
             return;
         }
 
-        container.innerHTML = `
-            <div class="daily-challenge-card ${challenge.completed ? 'completed' : ''}">
-                <div class="challenge-header">
-                    <div class="challenge-icon">${challenge.challenge.icon}</div>
-                    <div class="challenge-info">
-                        <div class="challenge-name">${challenge.challenge.name}</div>
-                        <div class="challenge-level">关卡 ${challenge.challenge.level}</div>
-                    </div>
-                    ${challenge.completed ? '<div class="challenge-complete-badge">✓ 已完成</div>' : ''}
-                </div>
-                <div class="challenge-description">${challenge.challenge.description}</div>
-                <div class="challenge-progress">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${this.getChallengeProgressPercent(challenge)}%"></div>
-                    </div>
-                    <div class="progress-text">${challenge.progressText}</div>
-                </div>
-                <div class="challenge-reward">
-                    <div class="reward-item">
-                        <div class="reward-icon">💰</div>
-                        <div class="reward-value">${challenge.challenge.reward.coins}</div>
-                        <div class="reward-label">金币</div>
-                    </div>
-                    <div class="reward-item">
-                        <div class="reward-icon">🏆</div>
-                        <div class="reward-value">${challenge.challenge.reward.score}</div>
-                        <div class="reward-label">分数</div>
-                    </div>
-                </div>
-                <div class="challenge-actions">
-                    <button class="start-challenge-btn" ${challenge.completed ? 'disabled' : ''} 
-                        onclick="window.startDailyChallenge && window.startDailyChallenge()">
-                        ${challenge.completed ? '已完成' : '开始挑战'}
-                    </button>
-                </div>
-            </div>
-        `;
+        // 使用安全的DOM操作，防止XSS攻击
+        container.innerHTML = ''; // 清空容器
 
-        // 暴露全局函数
-        window.startDailyChallenge = () => {
-            this.startLevel(challenge.challenge.level - 1);
-        };
+        const card = document.createElement('div');
+        card.className = `daily-challenge-card ${challenge.completed ? 'completed' : ''}`;
+
+        const header = document.createElement('div');
+        header.className = 'challenge-header';
+
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'challenge-icon';
+        iconDiv.textContent = challenge.challenge.icon;
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'challenge-info';
+
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'challenge-name';
+        nameDiv.textContent = challenge.challenge.name;
+
+        const levelDiv = document.createElement('div');
+        levelDiv.className = 'challenge-level';
+        levelDiv.textContent = `关卡 ${challenge.challenge.level}`;
+
+        infoDiv.appendChild(nameDiv);
+        infoDiv.appendChild(levelDiv);
+
+        header.appendChild(iconDiv);
+        header.appendChild(infoDiv);
+
+        if (challenge.completed) {
+            const badge = document.createElement('div');
+            badge.className = 'challenge-complete-badge';
+            badge.textContent = '✓ 已完成';
+            header.appendChild(badge);
+        }
+
+        card.appendChild(header);
+
+        const descDiv = document.createElement('div');
+        descDiv.className = 'challenge-description';
+        descDiv.textContent = challenge.challenge.description;
+        card.appendChild(descDiv);
+
+        container.appendChild(card);
+    }
+
+    // 安全地设置HTML内容（仅用于可信的静态HTML）
+    setSafeHTML(element, html) {
+        // 只对纯文本内容使用textContent
+        element.textContent = html.replace(/<[^>]*>/g, '');
     }
 
     getChallengeProgressPercent(challenge) {
@@ -389,7 +361,7 @@ export class Game {
         // 更新设施（使用扩展系统）
         if (this.extendedFacilitySystem) {
             this.extendedFacilitySystem.update(this, deltaTime);
-        } else {
+        } else if (this.facilitySystem && this.facilitySystem.update) {
             this.facilitySystem.update(this);
         }
     }
@@ -416,7 +388,7 @@ export class Game {
         // 更新设施（使用扩展系统）
         if (this.extendedFacilitySystem) {
             this.extendedFacilitySystem.update(this, deltaTime);
-        } else {
+        } else if (this.facilitySystem && this.facilitySystem.update) {
             this.facilitySystem.update(this);
         }
         
@@ -465,7 +437,7 @@ export class Game {
         // 绘制设施（使用扩展系统）
         if (this.extendedFacilitySystem) {
             this.extendedFacilitySystem.render(this);
-        } else {
+        } else if (this.facilitySystem && this.facilitySystem.render) {
             this.facilitySystem.render(this.ctx);
         }
 
@@ -538,11 +510,19 @@ export class Game {
         // 验证关卡索引
         if (levelIndex < 0 || levelIndex >= LEVEL_DATA.length) {
             console.error('Invalid level index:', levelIndex);
+            this.showMessage('无效的关卡索引');
             return;
         }
 
         this.currentLevel = levelIndex;
         const levelData = LEVEL_DATA[levelIndex];
+
+        // 验证关卡数据完整性
+        if (!levelData || !levelData.buildings || !Array.isArray(levelData.buildings)) {
+            console.error('Invalid level data:', levelData);
+            this.showMessage('关卡数据错误');
+            return;
+        }
 
         // 重置游戏状态
         this.score = 0;
@@ -570,7 +550,9 @@ export class Game {
         this.particleSystem.clear();
 
         // 清空设施
-        this.facilitySystem.clear();
+        if (this.facilitySystem && this.facilitySystem.clear) {
+            this.facilitySystem.clear();
+        }
         if (this.extendedFacilitySystem) {
             this.extendedFacilitySystem.facilities = [];
         }
@@ -614,14 +596,17 @@ export class Game {
 
     placeFacility(type, x, y) {
         let result;
-        
+
         // 使用扩展设施系统
         if (this.extendedFacilitySystem) {
             result = this.extendedFacilitySystem.place(this, type, x, y);
-        } else {
+        } else if (this.facilitySystem && this.facilitySystem.place) {
             result = this.facilitySystem.place(this, type, x, y);
+        } else {
+            console.warn('没有可用的设施系统');
+            return false;
         }
-        
+
         if (result) {
             console.log(`放置设施成功: ${type} at (${x}, ${y})`);
             this.enhancedAudio?.play('click');

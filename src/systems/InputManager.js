@@ -15,28 +15,53 @@ export class InputManager {
 
         this.game = null;
         this.canvas = null;
+
+        // 存储事件监听器引用，用于清理
+        this.eventHandlers = [];
+        this.mobileControlHandlers = [];
     }
 
     init(game) {
         this.game = game;
         this.canvas = game.canvas;
 
-        // 键盘事件
-        document.addEventListener('keydown', (e) => this.handleKeyDown(e));
-        document.addEventListener('keyup', (e) => this.handleKeyUp(e));
+        // 清理旧的事件监听器（如果存在）
+        this.cleanup();
+
+        // 键盘事件 - 存储处理器引用
+        const keyDownHandler = (e) => this.handleKeyDown(e);
+        const keyUpHandler = (e) => this.handleKeyUp(e);
+        document.addEventListener('keydown', keyDownHandler);
+        document.addEventListener('keyup', keyUpHandler);
+        this.eventHandlers.push({ element: document, type: 'keydown', handler: keyDownHandler });
+        this.eventHandlers.push({ element: document, type: 'keyup', handler: keyUpHandler });
 
         // 鼠标事件
-        this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
-        this.canvas.addEventListener('mouseup', (e) => this.handleMouseUp(e));
-        this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+        const mouseDownHandler = (e) => this.handleMouseDown(e);
+        const mouseUpHandler = (e) => this.handleMouseUp(e);
+        const mouseMoveHandler = (e) => this.handleMouseMove(e);
+        this.canvas.addEventListener('mousedown', mouseDownHandler);
+        this.canvas.addEventListener('mouseup', mouseUpHandler);
+        this.canvas.addEventListener('mousemove', mouseMoveHandler);
+        this.eventHandlers.push({ element: this.canvas, type: 'mousedown', handler: mouseDownHandler });
+        this.eventHandlers.push({ element: this.canvas, type: 'mouseup', handler: mouseUpHandler });
+        this.eventHandlers.push({ element: this.canvas, type: 'mousemove', handler: mouseMoveHandler });
 
         // 触摸事件
-        this.canvas.addEventListener('touchstart', (e) => this.handleTouchStart(e));
-        this.canvas.addEventListener('touchend', (e) => this.handleTouchEnd(e));
-        this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e));
+        const touchStartHandler = (e) => this.handleTouchStart(e);
+        const touchEndHandler = (e) => this.handleTouchEnd(e);
+        const touchMoveHandler = (e) => this.handleTouchMove(e);
+        this.canvas.addEventListener('touchstart', touchStartHandler);
+        this.canvas.addEventListener('touchend', touchEndHandler);
+        this.canvas.addEventListener('touchmove', touchMoveHandler);
+        this.eventHandlers.push({ element: this.canvas, type: 'touchstart', handler: touchStartHandler });
+        this.eventHandlers.push({ element: this.canvas, type: 'touchend', handler: touchEndHandler });
+        this.eventHandlers.push({ element: this.canvas, type: 'touchmove', handler: touchMoveHandler });
 
         // 设施放置
-        this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
+        const clickHandler = (e) => this.handleCanvasClick(e);
+        this.canvas.addEventListener('click', clickHandler);
+        this.eventHandlers.push({ element: this.canvas, type: 'click', handler: clickHandler });
 
         // 移动端控制按钮
         this.setupMobileControls();
@@ -60,67 +85,88 @@ export class InputManager {
         const btnFire = document.getElementById('btn-fire');
 
         // 触摸开始
-        btnUp?.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            this.keys['ArrowUp'] = true;
-        });
-        btnDown?.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            this.keys['ArrowDown'] = true;
-        });
-        btnLeft?.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            this.keys['ArrowLeft'] = true;
-        });
-        btnRight?.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            this.keys['ArrowRight'] = true;
-        });
-        btnFire?.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            this.isShooting = true;
-        });
+        const addTouchStart = (btn, key) => {
+            if (!btn) return;
+            const handler = (e) => {
+                e.preventDefault();
+                this.keys[key] = true;
+            };
+            btn.addEventListener('touchstart', handler);
+            this.mobileControlHandlers.push({ element: btn, type: 'touchstart', handler });
+        };
 
-        // 触摸结束
-        btnUp?.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            this.keys['ArrowUp'] = false;
-        });
-        btnDown?.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            this.keys['ArrowDown'] = false;
-        });
-        btnLeft?.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            this.keys['ArrowLeft'] = false;
-        });
-        btnRight?.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            this.keys['ArrowRight'] = false;
-        });
-        btnFire?.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            this.isShooting = false;
-        });
+        const addTouchEnd = (btn, key) => {
+            if (!btn) return;
+            const handler = (e) => {
+                e.preventDefault();
+                this.keys[key] = false;
+            };
+            btn.addEventListener('touchend', handler);
+            this.mobileControlHandlers.push({ element: btn, type: 'touchend', handler });
+        };
+
+        addTouchStart(btnUp, 'ArrowUp');
+        addTouchStart(btnDown, 'ArrowDown');
+        addTouchStart(btnLeft, 'ArrowLeft');
+        addTouchStart(btnRight, 'ArrowRight');
+
+        // 按钮触摸结束
+        addTouchEnd(btnUp, 'ArrowUp');
+        addTouchEnd(btnDown, 'ArrowDown');
+        addTouchEnd(btnLeft, 'ArrowLeft');
+        addTouchEnd(btnRight, 'ArrowRight');
+
+        // 发射按钮特殊处理
+        if (btnFire) {
+            const fireTouchStart = (e) => {
+                e.preventDefault();
+                this.isShooting = true;
+            };
+            const fireTouchEnd = (e) => {
+                e.preventDefault();
+                this.isShooting = false;
+            };
+            btnFire.addEventListener('touchstart', fireTouchStart);
+            btnFire.addEventListener('touchend', fireTouchEnd);
+            this.mobileControlHandlers.push({ element: btnFire, type: 'touchstart', handler: fireTouchStart });
+            this.mobileControlHandlers.push({ element: btnFire, type: 'touchend', handler: fireTouchEnd });
+        }
 
         // 鼠标点击（桌面端调试用）
-        btnUp?.addEventListener('mousedown', () => this.keys['ArrowUp'] = true);
-        btnDown?.addEventListener('mousedown', () => this.keys['ArrowDown'] = true);
-        btnLeft?.addEventListener('mousedown', () => this.keys['ArrowLeft'] = true);
-        btnRight?.addEventListener('mousedown', () => this.keys['ArrowRight'] = true);
-        btnFire?.addEventListener('mousedown', () => this.isShooting = true);
+        const addMouseEvents = (btn, key) => {
+            if (!btn) return;
+            const mouseDown = () => this.keys[key] = true;
+            const mouseUp = () => this.keys[key] = false;
+            const mouseLeave = () => this.keys[key] = false;
 
-        btnUp?.addEventListener('mouseup', () => this.keys['ArrowUp'] = false);
-        btnDown?.addEventListener('mouseup', () => this.keys['ArrowDown'] = false);
-        btnLeft?.addEventListener('mouseup', () => this.keys['ArrowLeft'] = false);
-        btnRight?.addEventListener('mouseup', () => this.keys['ArrowRight'] = false);
-        btnFire?.addEventListener('mouseup', () => this.isShooting = false);
+            btn.addEventListener('mousedown', mouseDown);
+            btn.addEventListener('mouseup', mouseUp);
+            btn.addEventListener('mouseleave', mouseLeave);
 
-        btnUp?.addEventListener('mouseleave', () => this.keys['ArrowUp'] = false);
-        btnDown?.addEventListener('mouseleave', () => this.keys['ArrowDown'] = false);
-        btnLeft?.addEventListener('mouseleave', () => this.keys['ArrowLeft'] = false);
-        btnRight?.addEventListener('mouseleave', () => this.keys['ArrowRight'] = false);
-        btnFire?.addEventListener('mouseleave', () => this.isShooting = false);
+            this.mobileControlHandlers.push({ element: btn, type: 'mousedown', handler: mouseDown });
+            this.mobileControlHandlers.push({ element: btn, type: 'mouseup', handler: mouseUp });
+            this.mobileControlHandlers.push({ element: btn, type: 'mouseleave', handler: mouseLeave });
+        };
+
+        addMouseEvents(btnUp, 'ArrowUp');
+        addMouseEvents(btnDown, 'ArrowDown');
+        addMouseEvents(btnLeft, 'ArrowLeft');
+        addMouseEvents(btnRight, 'ArrowRight');
+
+        // 发射按钮鼠标事件
+        if (btnFire) {
+            const fireMouseDown = () => this.isShooting = true;
+            const fireMouseUp = () => this.isShooting = false;
+            const fireMouseLeave = () => this.isShooting = false;
+
+            btnFire.addEventListener('mousedown', fireMouseDown);
+            btnFire.addEventListener('mouseup', fireMouseUp);
+            btnFire.addEventListener('mouseleave', fireMouseLeave);
+
+            this.mobileControlHandlers.push({ element: btnFire, type: 'mousedown', handler: fireMouseDown });
+            this.mobileControlHandlers.push({ element: btnFire, type: 'mouseup', handler: fireMouseUp });
+            this.mobileControlHandlers.push({ element: btnFire, type: 'mouseleave', handler: fireMouseLeave });
+        }
     }
 
     isMobileDevice() {
@@ -132,9 +178,12 @@ export class InputManager {
     }
 
     handleKeyDown(e) {
+        // 安全检查
+        if (!e || !e.key) return;
+
         this.keys[e.key] = true;
 
-        if (this.game.state !== GAME_STATE.BATTLE) return;
+        if (!this.game || this.game.state !== GAME_STATE.BATTLE) return;
 
         // 角度控制
         if (e.key === KEYS.UP || e.key === 'ArrowUp') {
@@ -151,12 +200,12 @@ export class InputManager {
         }
 
         // 发射
-        if (e.key === KEYS.SPACE) {
+        if (e.key === KEYS.SPACE || e.key === ' ') {
             this.isShooting = true;
         }
 
         // 暂停
-        if (e.key === KEYS.ESC) {
+        if (e.key === KEYS.ESC || e.key === 'Escape') {
             // TODO: 暂停功能
         }
     }
@@ -258,5 +307,35 @@ export class InputManager {
             Math.round(this.angle),
             Math.round(this.power)
         );
+    }
+
+    /**
+     * 清理所有事件监听器，防止内存泄漏
+     */
+    cleanup() {
+        // 清理主要事件监听器
+        this.eventHandlers.forEach(({ element, type, handler }) => {
+            element.removeEventListener(type, handler);
+        });
+        this.eventHandlers = [];
+
+        // 清理移动端控制按钮事件监听器
+        this.mobileControlHandlers.forEach(({ element, type, handler }) => {
+            element.removeEventListener(type, handler);
+        });
+        this.mobileControlHandlers = [];
+
+        // 重置状态
+        this.keys = {};
+        this.isShooting = false;
+    }
+
+    /**
+     * 销毁实例，释放所有资源
+     */
+    destroy() {
+        this.cleanup();
+        this.game = null;
+        this.canvas = null;
     }
 }

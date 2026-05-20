@@ -5,10 +5,11 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
     padding: 15px 25px;
-    border-radius: 10px;
+    border-radius: 14px;
     font-size: 18px;
     margin-bottom: 20px;
     text-align: center;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
 }
 
 .upgrade-coins span {
@@ -18,27 +19,28 @@
 }
 
 .upgrade-item {
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    padding: 15px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 16px;
     margin-bottom: 15px;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .upgrade-item.can-upgrade {
-    border-color: #27ae60;
+    border-color: rgba(39, 174, 96, 0.5);
     cursor: pointer;
 }
 
 .upgrade-item.can-upgrade:hover {
-    background: rgba(39, 174, 96, 0.2);
+    background: rgba(39, 174, 96, 0.12);
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(39, 174, 96, 0.15);
 }
 
 .upgrade-item.max-level {
-    opacity: 0.6;
-    border-color: #95a5a6;
+    opacity: 0.5;
+    border-color: rgba(149, 165, 166, 0.3);
 }
 
 .upgrade-header {
@@ -66,7 +68,7 @@
 }
 
 .upgrade-current {
-    color: #95a5a6;
+    color: #8e9aaf;
     font-size: 14px;
     margin-bottom: 8px;
 }
@@ -80,22 +82,25 @@
 .upgrade-btn {
     background: linear-gradient(135deg, #27ae60, #2ecc71);
     border: none;
-    border-radius: 5px;
-    padding: 8px 20px;
+    border-radius: 10px;
+    padding: 8px 22px;
     color: #fff;
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
 }
 
 .upgrade-btn:hover:not(:disabled) {
     transform: scale(1.05);
+    box-shadow: 0 4px 14px rgba(39, 174, 96, 0.4);
 }
 
 .upgrade-btn:disabled {
-    background: #95a5a6;
+    background: #636e72;
     cursor: not-allowed;
+    box-shadow: none;
 }
 
 /* 消防车库样式 */
@@ -110,10 +115,11 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
     padding: 12px 20px;
-    border-radius: 10px;
+    border-radius: 14px;
     font-size: 16px;
     margin-bottom: 20px;
     text-align: center;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
 }
 
 .garage-coins span {
@@ -122,25 +128,27 @@
 }
 
 .vehicle-card {
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    padding: 15px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px;
     margin-bottom: 15px;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .vehicle-card.selected {
-    border-color: #3498db;
-    background: rgba(52, 152, 219, 0.2);
+    border-color: rgba(52, 152, 219, 0.6);
+    background: rgba(52, 152, 219, 0.12);
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.15);
 }
 
 .vehicle-card.unlocked {
-    border-color: #27ae60;
+    border-color: rgba(39, 174, 96, 0.4);
 }
 
 .vehicle-card.locked {
-    opacity: 0.7;
+    opacity: 0.5;
+    filter: grayscale(0.3);
 }
 
 .vehicle-header {
@@ -162,18 +170,20 @@
 }
 
 .selected-badge {
-    background: #3498db;
+    background: linear-gradient(135deg, #3498db, #2980b9);
     color: #fff;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 12px;
     font-size: 12px;
     font-weight: bold;
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.3);
 }
 
 .vehicle-description {
-    color: #95a5a6;
+    color: #8e9aaf;
     font-size: 14px;
     margin-bottom: 12px;
+    line-height: 1.5;
 }
 
 .vehicle-stats {
@@ -190,7 +200,7 @@
 }
 
 .stat-label {
-    color: #95a5a6;
+    color: #8e9aaf;
 }
 
 .stat-value {
@@ -199,11 +209,11 @@
 }
 
 .vehicle-special {
-    background: rgba(255, 215, 0, 0.1);
+    background: rgba(255, 215, 0, 0.08);
     border-left: 3px solid #FFD700;
-    padding: 8px 12px;
+    padding: 10px 14px;
     margin-bottom: 12px;
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
 .special-name {
@@ -214,8 +224,9 @@
 }
 
 .special-desc {
-    color: #95a5a6;
+    color: #8e9aaf;
     font-size: 12px;
+    line-height: 1.4;
 }
 
 .vehicle-actions {
@@ -226,34 +237,48 @@
 .vehicle-btn {
     background: linear-gradient(135deg, #3498db, #2980b9);
     border: none;
-    border-radius: 20px;
-    padding: 10px 25px;
+    border-radius: 24px;
+    padding: 10px 28px;
     color: #fff;
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
 }
 
 .vehicle-btn:hover:not(:disabled) {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(52, 152, 219, 0.4);
 }
 
 .vehicle-btn:disabled {
-    background: #95a5a6;
+    background: #636e72;
     cursor: not-allowed;
+    box-shadow: none;
 }
 
 .vehicle-btn.select-btn {
     background: linear-gradient(135deg, #27ae60, #2ecc71);
+    box-shadow: 0 2px 10px rgba(39, 174, 96, 0.3);
+}
+
+.vehicle-btn.select-btn:hover:not(:disabled) {
+    box-shadow: 0 6px 18px rgba(39, 174, 96, 0.4);
 }
 
 .vehicle-btn.unlock-btn {
     background: linear-gradient(135deg, #f39c12, #e67e22);
+    box-shadow: 0 2px 10px rgba(243, 156, 18, 0.3);
 }
 
-/* 救援系统提示 */
+.vehicle-btn.unlock-btn:hover:not(:disabled) {
+    box-shadow: 0 6px 18px rgba(243, 156, 18, 0.4);
+}
+
+/* ==================== 游戏内特效 ==================== */
+
+/* 救援系统通知 */
 .rescue-notification {
     position: fixed;
     top: 100px;
@@ -261,12 +286,15 @@
     transform: translateX(-50%);
     background: rgba(231, 76, 60, 0.9);
     color: #fff;
-    padding: 12px 24px;
-    border-radius: 25px;
+    padding: 12px 28px;
+    border-radius: 28px;
     font-size: 16px;
     font-weight: bold;
     z-index: 1000;
     animation: bounce 0.5s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 20px rgba(231, 76, 60, 0.4);
 }
 
 @keyframes bounce {
@@ -279,16 +307,12 @@
     position: absolute;
     background: rgba(255, 0, 0, 0.8);
     color: #fff;
-    padding: 8px 16px;
-    border-radius: 20px;
+    padding: 8px 18px;
+    border-radius: 22px;
     font-size: 14px;
     font-weight: bold;
     animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
+    box-shadow: 0 4px 14px rgba(255, 0, 0, 0.3);
 }
 
 /* 爆炸效果 */
@@ -302,14 +326,8 @@
 }
 
 @keyframes explode {
-    0% {
-        transform: scale(0);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(3);
-        opacity: 0;
-    }
+    0% { transform: scale(0); opacity: 1; }
+    100% { transform: scale(3); opacity: 0; }
 }
 
 /* 有毒云团效果 */
@@ -333,14 +351,8 @@
 }
 
 @keyframes float-up {
-    0% {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(-100px);
-        opacity: 0;
-    }
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-100px); opacity: 0; }
 }
 
 /* 车辆特殊技能激活 */
@@ -352,11 +364,14 @@
     background: rgba(52, 152, 219, 0.9);
     color: #fff;
     padding: 20px 40px;
-    border-radius: 15px;
+    border-radius: 16px;
     font-size: 20px;
     font-weight: bold;
     z-index: 1000;
     animation: zoom-in 0.3s ease;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(52, 152, 219, 0.4);
 }
 
 @keyframes zoom-in {
@@ -366,22 +381,25 @@
 
 /* 统计信息面板 */
 .stats-panel {
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 10px;
-    padding: 15px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 14px;
+    padding: 16px;
     margin: 10px 0;
+    border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .stats-panel h3 {
     color: #fff;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    font-size: 16px;
 }
 
 .stats-row {
     display: flex;
     justify-content: space-between;
-    padding: 5px 0;
-    color: #95a5a6;
+    padding: 6px 0;
+    color: #8e9aaf;
+    font-size: 14px;
 }
 
 .stats-row span:last-child {
@@ -389,16 +407,16 @@
     font-weight: bold;
 }
 
-/* 响应式调整 */
+/* ==================== 响应式调整 ==================== */
 @media (max-width: 768px) {
     .vehicle-stats {
         grid-template-columns: 1fr;
     }
-    
+
     .upgrade-header {
         flex-wrap: wrap;
     }
-    
+
     .upgrade-level {
         width: 100%;
         margin-top: 5px;

@@ -10,8 +10,8 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>🔥 消防灭火 - 策略游戏</title>
-  <script type="module" crossorigin src="/assets/main-DyE8kp_a.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/main-D4PA_-a7.css">
+  <script type="module" crossorigin src="/assets/main-C87wnI1y.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-DvIkWa4r.css">
 </head>
 <body>
     <div id="game-container">
@@ -54,21 +54,15 @@
 
         <!-- 设施侧边栏 -->
         <div id="sidebar" class="hud-panel" style="display: none;">
-            <button class="facility-btn" data-facility="hydrant">
-                <div class="facility-icon">💧</div>
-                <div class="facility-name">消防栓</div>
-                <div class="facility-cost">50分</div>
-            </button>
-            <button class="facility-btn" data-facility="firewall">
-                <div class="facility-icon">🧱</div>
-                <div class="facility-name">防火墙</div>
-                <div class="facility-cost">80分</div>
-            </button>
-            <button class="facility-btn" data-facility="fighter">
-                <div class="facility-icon">👨‍🚒</div>
-                <div class="facility-name">消防员</div>
-                <div class="facility-cost">100分</div>
-            </button>
+            <div class="facility-category-tabs">
+                <button class="category-tab active" data-category="basic">🔧 基础</button>
+                <button class="category-tab" data-category="advanced">⭐ 高级</button>
+                <button class="category-tab" data-category="special">🌟 特殊</button>
+                <button class="category-tab" data-category="support">🎯 辅助</button>
+            </div>
+            <div id="facility-grid" class="facility-grid">
+                <!-- 设施按钮将通过JS动态生成 -->
+            </div>
         </div>
 
         <!-- 移动端控制按钮 -->
@@ -87,7 +81,21 @@
         </div>
 
         <!-- 准备阶段提示 -->
-        <div id="prepare-message" style="display: none;">🎯 准备阶段 - 放置防御设施</div>
+        <div id="prepare-message" style="display: none; position: absolute; top: 5px; left: 50%; transform: translateX(-50%); z-index: 50;">
+            <div style="font-size: 14px; color: #fff; text-align: center; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 10px; display: flex; align-items: center; gap: 15px;">
+                <span>🎯 准备阶段（可选）</span>
+                <button id="btn-skip" onclick="window.skipPrepare && window.skipPrepare()" style="
+                    background: linear-gradient(135deg, #27ae60, #2ecc71);
+                    border: none;
+                    border-radius: 15px;
+                    padding: 8px 20px;
+                    color: #fff;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                ">⚡ 开始战斗</button>
+            </div>
+        </div>
         <div id="prepare-timer" style="display: none;">30</div>
 
         <!-- 主菜单 -->
@@ -117,6 +125,14 @@
             <div class="menu-buttons">
                 <button class="menu-btn" id="btn-play">🚒 开始游戏</button>
                 <button class="menu-btn secondary" id="btn-levels">📋 选择关卡</button>
+                <button class="menu-btn secondary" id="btn-challenge">🏅 挑战模式</button>
+                <button class="menu-btn secondary" id="btn-daily">📅 每日挑战</button>
+                <button class="menu-btn secondary" id="btn-powerup-shop">🎁 道具商店</button>
+                <button class="menu-btn secondary" id="btn-upgrade">⬆️ 升级中心</button>
+                <button class="menu-btn secondary" id="btn-vehicle">🚒 消防车库</button>
+                <button class="menu-btn secondary" id="btn-achievements">🏆 成就</button>
+                <button class="menu-btn secondary" id="btn-leaderboard">📊 排行榜</button>
+                <button class="menu-btn secondary" id="btn-settings">⚙️ 设置</button>
             </div>
         </div>
 
@@ -141,6 +157,84 @@
                 <button class="menu-btn secondary" id="btn-next">➡️ 下一关</button>
                 <button class="menu-btn secondary" id="btn-menu">🏠 主菜单</button>
             </div>
+        </div>
+
+        <!-- 挑战模式界面 -->
+        <div id="challenge-menu" class="menu-overlay" style="display: none;">
+            <div class="menu-title">🏅 挑战模式</div>
+            <div id="challenge-level-select" style="margin: 20px 0;">
+                <label style="color: #fff; margin-right: 10px;">选择关卡:</label>
+                <select id="challenge-level-dropdown" style="padding: 8px 15px; font-size: 14px; border-radius: 5px;">
+                </select>
+            </div>
+            <div id="challenge-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0;"></div>
+            <button class="menu-btn secondary" id="btn-back-challenge">← 返回</button>
+        </div>
+
+        <!-- 道具商店界面 -->
+        <div id="powerup-shop" class="menu-overlay" style="display: none;">
+            <div class="menu-title">🎁 道具商店</div>
+            <div style="color: #FFD700; font-size: 18px; margin: 10px 0;">
+                💰 当前金币: <span id="shop-coins">0</span>
+            </div>
+            <div id="powerup-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; max-height: 400px; overflow-y: auto;"></div>
+            <button class="menu-btn secondary" id="btn-back-shop">← 返回</button>
+        </div>
+
+        <!-- 成就界面 -->
+        <div id="achievement-menu" class="menu-overlay" style="display: none;">
+            <div class="menu-title">🏆 成就</div>
+            <div style="color: #fff; margin: 10px 0;">
+                已解锁: <span id="achievement-progress">0</span> / <span id="achievement-total">0</span>
+            </div>
+            <div id="achievement-list" style="display: grid; grid-template-columns: 1fr; gap: 10px; margin: 20px 0; max-height: 450px; overflow-y: auto;"></div>
+            <button class="menu-btn secondary" id="btn-back-achievement">← 返回</button>
+        </div>
+
+        <!-- 排行榜界面 -->
+        <div id="leaderboard-menu" class="menu-overlay" style="display: none;">
+            <div class="menu-title">📊 排行榜</div>
+            <div id="leaderboard-tabs" style="display: flex; gap: 10px; margin: 15px 0;">
+                <button class="tab-btn active" data-tab="levels">关卡记录</button>
+                <button class="tab-btn" data-tab="stats">总体统计</button>
+            </div>
+            <div id="leaderboard-content" style="max-height: 450px; overflow-y: auto;"></div>
+            <button class="menu-btn secondary" id="btn-back-leaderboard">← 返回</button>
+        </div>
+
+        <!-- 升级中心界面 -->
+        <div id="upgrade-menu" class="menu-overlay" style="display: none;">
+            <div class="menu-title">⬆️ 升级中心</div>
+            <div id="upgrade-list" style="max-height: 500px; overflow-y: auto; padding: 10px;"></div>
+            <button class="menu-btn secondary" id="btn-back-upgrade">← 返回</button>
+        </div>
+
+        <!-- 消防车库界面 -->
+        <div id="vehicle-menu" class="menu-overlay" style="display: none;">
+            <div class="menu-title">🚒 消防车库</div>
+            <div id="vehicle-list" style="max-height: 500px; overflow-y: auto; padding: 10px;"></div>
+            <button class="menu-btn secondary" id="btn-back-vehicle">← 返回</button>
+        </div>
+
+        <!-- 设置界面 -->
+        <div id="settings-menu" class="menu-overlay" style="display: none;">
+            <div class="menu-title">⚙️ 设置</div>
+            <div id="settings-list" style="max-height: 500px; overflow-y: auto; padding: 10px;"></div>
+            <button class="menu-btn secondary" id="btn-back-settings">← 返回</button>
+        </div>
+
+        <!-- 每日挑战界面 -->
+        <div id="daily-menu" class="menu-overlay" style="display: none;">
+            <div class="menu-title">📅 每日挑战</div>
+            <div id="daily-content" style="max-height: 500px; overflow-y: auto; padding: 10px;"></div>
+            <button class="menu-btn secondary" id="btn-back-daily">← 返回</button>
+        </div>
+
+        <!-- 天气选择界面 -->
+        <div id="weather-select" class="menu-overlay" style="display: none;">
+            <div class="menu-title">🌤️ 选择天气</div>
+            <div id="weather-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0;"></div>
+            <button class="menu-btn secondary" id="btn-back-weather">← 返回</button>
         </div>
     </div>
 

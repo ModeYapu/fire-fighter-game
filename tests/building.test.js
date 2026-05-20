@@ -42,12 +42,27 @@ describe('BuildingSystem', () => {
     
     mockGame = {
       ctx: {
+        save: jest.fn(),
+        restore: jest.fn(),
         fillRect: jest.fn(),
+        strokeRect: jest.fn(),
         beginPath: jest.fn(),
         moveTo: jest.fn(),
         lineTo: jest.fn(),
         closePath: jest.fn(),
-        fill: jest.fn()
+        fill: jest.fn(),
+        stroke: jest.fn(),
+        arc: jest.fn(),
+        fillText: jest.fn(),
+        createLinearGradient: jest.fn(() => ({
+          addColorStop: jest.fn()
+        })),
+        globalAlpha: 1.0,
+        lineWidth: 2,
+        strokeStyle: '#000000',
+        fillStyle: '#000000',
+        textAlign: 'center',
+        font: '12px Arial'
       }
     };
   });

@@ -56,6 +56,7 @@ describe('FireSystem', () => {
         beginPath: jest.fn(),
         arc: jest.fn(),
         fill: jest.fn(),
+        fillText: jest.fn(),
         createRadialGradient: jest.fn(() => ({
           addColorStop: jest.fn()
         }))
@@ -139,18 +140,20 @@ describe('FireSystem', () => {
 
   test('应该正确计算火焰位置', () => {
     const newFire = fireSystem.ignite(mockBuilding);
-    
+
     // 火焰应该在建筑中心
     expect(newFire.x).toBe(mockBuilding.x + mockBuilding.width / 2);
-    expect(newFire.y).toBe(mockBuilding.y + mockBuilding.height / 2);
+    // 火焰在建筑顶部1/3处（更新后的逻辑）
+    expect(newFire.y).toBe(mockBuilding.y + mockBuilding.height / 3);
   });
 
   test('应该正确更新火焰半径', () => {
     const newFire = fireSystem.ignite(mockBuilding);
     newFire.intensity = 3;
     newFire.update(mockGame);
-    
-    const expectedRadius = 20 + 3 * 10;
+
+    // 实际计算公式：35 + intensity * 15
+    const expectedRadius = 35 + 3 * 15;
     expect(newFire.radius).toBe(expectedRadius);
   });
 

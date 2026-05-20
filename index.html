@@ -10,10 +10,10 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>🔥 消防灭火 - 策略游戏</title>
-    <link rel="stylesheet" href="css/style.css?v=8">
-    <link rel="stylesheet" href="css/new-features.css?v=1">
-    <link rel="stylesheet" href="css/settings.css?v=1">
-    <link rel="stylesheet" href="css/facilities.css?v=1">
+    <link rel="stylesheet" href="css/style.css?v=10">
+    <link rel="stylesheet" href="css/facilities.css?v=2">
+    <link rel="stylesheet" href="css/new-features.css?v=2">
+    <link rel="stylesheet" href="css/settings.css?v=2">
 </head>
 <body>
     <div id="game-container">
@@ -84,17 +84,19 @@
 
         <!-- 准备阶段提示 -->
         <div id="prepare-message" style="display: none; position: absolute; top: 5px; left: 50%; transform: translateX(-50%); z-index: 50;">
-            <div style="font-size: 14px; color: #fff; text-align: center; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 10px; display: flex; align-items: center; gap: 15px;">
+            <div style="font-size: 14px; color: #fff; text-align: center; background: rgba(15,15,35,0.75); padding: 12px 24px; border-radius: 14px; display: flex; align-items: center; gap: 15px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(39,174,96,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
                 <span>🎯 准备阶段（可选）</span>
                 <button id="btn-skip" onclick="window.skipPrepare && window.skipPrepare()" style="
                     background: linear-gradient(135deg, #27ae60, #2ecc71);
                     border: none;
-                    border-radius: 15px;
-                    padding: 8px 20px;
+                    border-radius: 20px;
+                    padding: 8px 22px;
                     color: #fff;
                     font-size: 14px;
                     font-weight: 600;
                     cursor: pointer;
+                    box-shadow: 0 2px 10px rgba(39,174,96,0.3);
+                    transition: all 0.2s ease;
                 ">⚡ 开始战斗</button>
             </div>
         </div>
@@ -102,10 +104,13 @@
 
         <!-- 主菜单 -->
         <div id="main-menu" class="menu-overlay">
-            <div class="menu-title">
-                <span class="fire-icon">🔥</span> 消防灭火 <span class="fire-icon">🔥</span>
+            <div class="game-logo-container">
+                <div class="game-logo">
+                    <span class="logo-icon">🚒</span>
+                    <h1 class="logo-title">消防灭火策略游戏</h1>
+                </div>
+                <div class="logo-subtitle">Fire Fighter Strategy Game</div>
             </div>
-            <div class="menu-subtitle">策略灭火游戏</div>
             
             <!-- 玩法说明 -->
             <div class="tutorial-card">
@@ -241,21 +246,6 @@
     </div>
 
     <!-- 游戏脚本 -->
-    <script src="js/constants.js"></script>
-    <script src="js/challenge.js"></script>
-    <script src="js/powerup.js"></script>
-    <script src="js/weather.js"></script>
-    <script src="js/achievement.js"></script>
-    <script src="js/leaderboard.js"></script>
-    <script src="js/rescue.js"></script>
-    <script src="js/upgrade.js"></script>
-    <script src="js/special-events.js"></script>
-    <script src="js/vehicle.js"></script>
-    <script src="js/extended-facilities.js"></script>
-    <script src="js/game-optimizer.js"></script>
-    <script src="js/enhanced-systems.js"></script>
-    <script src="js/settings-system.js"></script>
-    <script src="js/game-integration.js"></script>
     <script type="module" src="src/main.js"></script>
 </body>
 </html>

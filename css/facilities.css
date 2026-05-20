@@ -1,40 +1,42 @@
-/* ==================== 扩展设施样式 ==================== */
+/* ==================== 设施样式 ==================== */
 
 /* 设施分类标签 */
 .facility-category-tabs {
     display: flex;
-    gap: 5px;
-    margin-bottom: 10px;
-    padding: 5px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
+    gap: 4px;
+    margin-bottom: 12px;
+    padding: 4px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .category-tab {
     flex: 1;
-    padding: 8px 12px;
+    padding: 8px 10px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     background: transparent;
-    color: #95a5a6;
+    color: #8e9aaf;
     font-size: 13px;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .category-tab:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    color: #d0d0e0;
 }
 
 .category-tab.active {
     background: linear-gradient(135deg, #3498db, #2980b9);
     color: #fff;
+    box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
 }
 
 .category-tab.locked {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
 }
 
@@ -45,36 +47,41 @@
     gap: 8px;
 }
 
-/* 设施按钮增强 */
+/* 设施按钮（统一覆盖 style.css 中的旧版本） */
 .facility-btn {
     position: relative;
     padding: 10px 8px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 5px;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .facility-btn:hover:not(.locked):not(.selected) {
     background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .facility-btn.selected {
-    background: linear-gradient(135deg, rgba(52, 152, 219, 0.3), rgba(41, 128, 185, 0.3));
-    border-color: #3498db;
-    box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.25), rgba(41, 128, 185, 0.25));
+    border-color: rgba(52, 152, 219, 0.6);
+    box-shadow:
+        0 0 18px rgba(52, 152, 219, 0.35),
+        inset 0 0 12px rgba(52, 152, 219, 0.1);
 }
 
 .facility-btn.locked {
-    opacity: 0.4;
+    opacity: 0.35;
     cursor: not-allowed;
+    filter: grayscale(0.5);
 }
 
 .facility-icon {
@@ -83,18 +90,19 @@
 
 .facility-name {
     font-size: 11px;
-    color: #ecf0f1;
-    font-weight: bold;
+    color: #d0d0e0;
+    font-weight: 600;
     text-align: center;
+    line-height: 1.2;
 }
 
 .facility-cost {
     font-size: 12px;
     color: #f39c12;
-    font-weight: bold;
+    font-weight: 700;
 }
 
-/* 设施类别标识 */
+/* 设施类别标识 — 左侧彩色条 */
 .facility-btn[data-category="basic"] {
     border-left: 3px solid #27ae60;
 }
@@ -111,23 +119,27 @@
     border-left: 3px solid #3498db;
 }
 
-/* 设施信息提示 */
+/* 设施 Tooltip */
 .facility-tooltip {
     position: absolute;
     bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(15, 15, 35, 0.95);
     color: #fff;
-    padding: 10px 15px;
-    border-radius: 8px;
+    padding: 12px 16px;
+    border-radius: 10px;
     font-size: 12px;
     white-space: nowrap;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.25s ease;
     z-index: 1000;
     margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
 .facility-btn:hover .facility-tooltip {
@@ -141,7 +153,7 @@
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: rgba(0, 0, 0, 0.9);
+    border-top-color: rgba(15, 15, 35, 0.95);
 }
 
 .tooltip-name {
@@ -160,7 +172,7 @@
     font-size: 11px;
 }
 
-/* 解锁标识 */
+/* 解锁 / 新标记 */
 .unlock-badge {
     position: absolute;
     top: -5px;
@@ -175,10 +187,12 @@
     justify-content: center;
     font-size: 12px;
     font-weight: bold;
+    box-shadow: 0 2px 6px rgba(231, 76, 60, 0.5);
 }
 
 .new-badge {
     background: #27ae60;
+    box-shadow: 0 2px 6px rgba(39, 174, 96, 0.5);
 }
 
 /* 冷却遮罩 */
@@ -188,11 +202,13 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.65);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
 }
 
 .cooldown-text {
@@ -201,19 +217,36 @@
     font-weight: bold;
 }
 
-/* 设施详情面板 */
+/* 设施详情弹窗 — 毛玻璃 */
 .facility-detail-panel {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: linear-gradient(135deg, #2c3e50, #34495e);
-    border-radius: 15px;
-    padding: 20px;
+    background: rgba(44, 62, 80, 0.85);
+    border-radius: 20px;
+    padding: 24px;
     min-width: 300px;
     max-width: 400px;
     z-index: 2000;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    animation: panelZoomIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes panelZoomIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
 }
 
 .facility-detail-header {
@@ -222,7 +255,7 @@
     gap: 15px;
     margin-bottom: 15px;
     padding-bottom: 15px;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .facility-detail-icon {
@@ -244,18 +277,19 @@
     font-size: 12px;
     color: #3498db;
     text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .facility-detail-description {
     color: #95a5a6;
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.6;
     margin-bottom: 15px;
 }
 
 .facility-detail-stats {
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 15px;
     margin-bottom: 15px;
 }
@@ -269,7 +303,7 @@
 }
 
 .stat-label {
-    color: #95a5a6;
+    color: #8e9aaf;
 }
 
 .stat-value {
@@ -286,30 +320,31 @@
     flex: 1;
     padding: 10px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 14px;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .place-btn {
     background: linear-gradient(135deg, #27ae60, #2ecc71);
     color: #fff;
+    box-shadow: 0 2px 10px rgba(39, 174, 96, 0.3);
 }
 
 .place-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+    box-shadow: 0 6px 18px rgba(39, 174, 96, 0.4);
 }
 
 .cancel-btn {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     color: #fff;
 }
 
 .cancel-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 /* 设施计数器 */
@@ -328,6 +363,7 @@
     font-size: 11px;
     font-weight: bold;
     padding: 0 5px;
+    box-shadow: 0 2px 6px rgba(231, 76, 60, 0.5);
 }
 
 /* 设施状态指示器 */
@@ -349,30 +385,16 @@
 
 .status-dot.active {
     background: #27ae60;
-    animation: pulse 1s infinite;
+    box-shadow: 0 0 6px rgba(39, 174, 96, 0.6);
+    animation: pulse 1.5s infinite;
 }
 
 .status-dot.cooldown {
     background: #f39c12;
+    box-shadow: 0 0 6px rgba(243, 156, 18, 0.6);
 }
 
-/* 响应式调整 */
-@media (max-width: 768px) {
-    .facility-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .facility-detail-panel {
-        min-width: 280px;
-        padding: 15px;
-    }
-    
-    .facility-tooltip {
-        display: none;
-    }
-}
-
-/* 动画 */
+/* ==================== 动画 ==================== */
 @keyframes facility-place {
     0% {
         transform: scale(0);
@@ -391,37 +413,51 @@
     animation: facility-place 0.3s ease;
 }
 
-/* 水塔旋转动画 */
 @keyframes water-spray {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
-/* 直升机悬停动画 */
 @keyframes helicopter-hover {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-5px);
-    }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
 }
 
-/* 水幕流动动画 */
 @keyframes water-curtain {
-    0% {
-        transform: translateY(-20px);
-        opacity: 0;
+    0% { transform: translateY(-20px); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateY(20px); opacity: 0; }
+}
+
+/* ==================== 响应式调整 ==================== */
+@media (max-width: 768px) {
+    .facility-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
-    50% {
-        opacity: 1;
+
+    .facility-detail-panel {
+        min-width: 260px;
+        max-width: 90vw;
+        padding: 18px;
     }
-    100% {
-        transform: translateY(20px);
-        opacity: 0;
+
+    .facility-tooltip {
+        display: none;
+    }
+
+    .facility-icon {
+        font-size: 26px;
+    }
+
+    .facility-name {
+        font-size: 10px;
+    }
+
+    .facility-cost {
+        font-size: 11px;
+    }
+
+    .facility-btn {
+        padding: 8px 6px;
     }
 }
