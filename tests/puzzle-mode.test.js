@@ -544,8 +544,15 @@ describe('PuzzleEditor', () => {
 
     test('连续创建应递增ID', () => {
       editor.createNew();
-      editor.save();
+      editor.setProperty('name', '谜题1');
+      editor.addBuilding({ type: 'WOOD', initialFire: true });
+      expect(editor.editingPuzzle.id).toBe('custom-1');
+      const result = editor.save();
+      expect(result.success).toBe(true);
+      expect(editor.nextCustomId).toBe(2);
       editor.createNew();
+      editor.setProperty('name', '谜题2');
+      editor.addBuilding({ type: 'WOOD', initialFire: true });
       expect(editor.editingPuzzle.id).toBe('custom-2');
     });
   });
