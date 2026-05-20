@@ -565,7 +565,7 @@ export class PuzzleModeSystem {
 
             section.appendChild(grid);
             wrapper.appendChild(section);
-        }
+        });
 
         container.appendChild(wrapper);
     }

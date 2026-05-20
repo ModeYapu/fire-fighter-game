@@ -10,6 +10,7 @@ describe('Tech Tree System Integration', () => {
     let techTree;
 
     beforeEach(() => {
+        localStorage.clear();
         game = {
             addTechPoints: jest.fn()
         };
@@ -87,6 +88,7 @@ describe('Community System Integration', () => {
     let community;
 
     beforeEach(() => {
+        localStorage.clear();
         game = {};
         community = new CommunitySystem(game);
     });
