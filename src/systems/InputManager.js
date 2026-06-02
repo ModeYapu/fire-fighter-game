@@ -183,7 +183,23 @@ export class InputManager {
 
         this.keys[e.key] = true;
 
-        if (!this.game || this.game.state !== GAME_STATE.BATTLE) return;
+        if (!this.game) return;
+
+        // Round 4: 关卡编辑器按键
+        if (this.game.levelEditorSystem?.isActive) {
+            if (this.game.levelEditorSystem.handleKeyPress(e.code)) {
+                return;
+            }
+        }
+
+        // Round 4: 消防员切换 (Tab键)
+        if (e.key === 'Tab' && (this.game.state === GAME_STATE.BATTLE || this.game.state === GAME_STATE.PREPARE)) {
+            e.preventDefault();
+            this.game.fighterSystem?.switchFighter();
+            return;
+        }
+
+        if (this.game.state !== GAME_STATE.BATTLE) return;
 
         // 角度控制
         if (e.key === KEYS.UP || e.key === 'ArrowUp') {

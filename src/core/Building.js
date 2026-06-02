@@ -21,15 +21,50 @@ export class Building {
         this.roofColor = config.roofColor || '#8B4513';
         this.burning = false;
         this.damageLevel = 0; // 0-1 损坏程度
+        this.collapsed = false; // 是否已坍塌
     }
 
     update(game) {
         // 更新损坏程度
         this.damageLevel = 1 - (this.health / this.maxHealth);
-        
-        // 建筑被完全烧毁
-        if (this.health <= 0) {
+
+        // 建筑被完全烧毁 - 坍塌
+        if (this.health <= 0 && !this.collapsed) {
             this.health = 0;
+            this.collapse(game);
+        }
+    }
+
+    collapse(game) {
+        this.collapsed = true;
+        this.burning = false;
+
+        // 产生坍塌效果
+        if (game && game.particles) {
+            // 烟尘
+            for (let i = 0; i < 30; i++) {
+                game.particles.createSmoke(
+                    this.x + this.width / 2 + (Math.random() - 0.5) * this.width,
+                    this.y + this.height / 2 + (Math.random() - 0.5) * this.height
+                );
+            }
+            // 碎石
+            for (let i = 0; i < 20; i++) {
+                game.particles.createDebris(
+                    this.x + this.width / 2,
+                    this.y + this.height / 2
+                );
+            }
+        }
+
+        // 播放音效
+        if (game && game.audioSystem) {
+            game.audioSystem.playCollapse();
+        }
+
+        // 记录统计
+        if (game && game.stats) {
+            game.stats.buildingsLost++;
         }
     }
 

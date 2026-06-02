@@ -11,6 +11,12 @@ import { BackgroundSystem } from './BackgroundSystem.js';
 import { PhysicsEngine } from '../systems/PhysicsEngine.js';
 import { InputManager } from '../systems/InputManager.js';
 import { UIManager } from '../systems/UIManager.js';
+import { AudioSystem } from '../systems/AudioSystem.js';
+import { LeaderboardSystem } from '../systems/LeaderboardSystem.js';
+import { TutorialSystem } from '../systems/TutorialSystem.js';
+import { FighterSystem } from '../systems/FighterSystem.js';
+import { ScoringSystem } from '../systems/ScoringSystem.js';
+import { LevelEditorSystem } from '../systems/LevelEditorSystem.js';
 
 // 导入新系统（从js目录）
 // 注意：由于模块路径问题，这些系统将通过全局变量访问
@@ -52,6 +58,14 @@ export class Game {
         this.physicsEngine = new PhysicsEngine();
         this.inputManager = new InputManager();
         this.ui = new UIManager();
+        this.audioSystem = new AudioSystem();
+        this.leaderboardSystem = new LeaderboardSystem();
+        this.tutorialSystem = null; // 延迟初始化，需要game实例
+
+        // Round 4 新系统
+        this.fighterSystem = new FighterSystem();
+        this.scoringSystem = new ScoringSystem();
+        this.levelEditorSystem = new LevelEditorSystem();
 
         // 🔥 新系统（通过全局变量访问）
         this.rescueSystem = null;
@@ -100,6 +114,13 @@ export class Game {
     init() {
         this.canvas = document.getElementById('game-canvas');
         this.ctx = this.canvas.getContext('2d');
+
+        // 初始化音频系统
+        this.audioSystem.init();
+
+        // 初始化教程系统
+        this.tutorialSystem = new TutorialSystem(this);
+        this.tutorialSystem.init();
 
         // 初始化基础系统
         this.ui.init(this);
@@ -629,6 +650,24 @@ export class Game {
         if (this.settingsSystem?.getSetting('showFPS')) {
             this.optimizer?.renderPerformancePanel(this.ctx);
         }
+
+        // Round 4: 渲染消防员系统
+        if (this.state === GAME_STATE.BATTLE || this.state === GAME_STATE.PREPARE) {
+            this.fighterSystem?.renderUI(this.ctx, this.canvas.width - 220, 70);
+        }
+
+        // Round 4: 渲染风向指示器
+        if (this.fireSystem && (this.state === GAME_STATE.BATTLE || this.state === GAME_STATE.PREPARE)) {
+            this.ui.renderWindArrow(
+                this.ctx,
+                this.canvas.width - 50,
+                120,
+                this.fireSystem.windDirection || 0
+            );
+        }
+
+        // Round 4: 渲染关卡编辑器
+        this.levelEditorSystem?.render(this.ctx, this.canvas.width, this.canvas.height);
     }
 
     renderBackground() {
@@ -690,6 +729,15 @@ export class Game {
         this.buildingSystem.buildings = [];
         this.buildings = this.buildingSystem.buildings;
 
+        // Round 4: 重置消防员系统和评分系统
+        this.fighterSystem?.reset();
+        this.scoringSystem.currentGrade = null;
+
+        // Round 4: 设置风向
+        if (levelData.wind !== undefined) {
+            this.fireSystem.setWind(levelData.wind);
+        }
+
         levelData.buildings.forEach(b => {
             this.buildingSystem.create(b.type, b.x, b.y);
         });
@@ -730,6 +778,11 @@ export class Game {
     startBattle() {
         this.state = GAME_STATE.BATTLE;
 
+        // 播放警报声
+        this.audioSystem.playAlarm();
+        // 启动火焰背景音
+        this.audioSystem.startFireAmbient();
+
         // 谜题模式：点燃谜题火焰
         if (this.currentLevel === -1 && this.puzzleModeSystem) {
             this.puzzleModeSystem.ignitePuzzleFires();
@@ -745,10 +798,10 @@ export class Game {
 
     shootWater(angle, power) {
         this.waterSystem.shoot(this, angle, power);
-        
+
         // 播放音效
-        this.enhancedAudio?.play('waterShoot');
-        
+        this.audioSystem.playWaterShoot();
+
         // 更新统计
         this.stats.shotsFired++;
     }
@@ -795,6 +848,30 @@ export class Game {
     win() {
         this.state = GAME_STATE.WIN;
         const savedBuildings = this.buildings.filter(b => b.health > 0).length;
+        const levelId = LEVEL_DATA[this.currentLevel]?.id || 1;
+
+        // 停止火焰背景音
+        this.audioSystem.stopFireAmbient();
+        // 播放胜利音效
+        this.audioSystem.playVictory();
+
+        // Round 4: 计算评分等级
+        const scoreDetails = this.scoringSystem.calculateScore(this);
+
+        // 记录成绩到排行榜
+        const isNewRecord = this.leaderboardSystem.isNewRecord(levelId, this.score);
+        const rank = this.leaderboardSystem.recordScore(
+            levelId,
+            this.score,
+            this.water,
+            savedBuildings,
+            LEVEL_DATA[this.currentLevel]?.time - this.time || 60
+        );
+
+        // 如果是新纪录，播放成就音效
+        if (isNewRecord) {
+            this.audioSystem.playAchievement();
+        }
 
         // 谜题模式评分
         if (this.currentLevel === -1 && this.puzzleModeSystem && this.puzzleModeSystem.currentPuzzle) {
@@ -826,19 +903,19 @@ export class Game {
         // 保存进度
         this.autoSaveSystem?.save(0);
 
-        // 播放胜利音效
-        this.enhancedAudio?.play('victory');
-
-        this.ui.showResult(true, this.score, this.water, savedBuildings);
+        // Round 4: 显示评分等级结果
+        this.ui.showResultWithGrade(true, this.score, this.water, savedBuildings, scoreDetails);
     }
 
     lose() {
         this.state = GAME_STATE.LOSE;
         const savedBuildings = this.buildings.filter(b => b.health > 0).length;
-        
+
+        // 停止火焰背景音
+        this.audioSystem.stopFireAmbient();
         // 播放失败音效
-        this.enhancedAudio?.play('defeat');
-        
+        this.audioSystem.playDefeat();
+
         this.ui.showResult(false, this.score, this.water, savedBuildings);
     }
 

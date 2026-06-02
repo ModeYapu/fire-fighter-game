@@ -225,9 +225,24 @@ export class FireAISystem {
     }
 
     updateBossAI(entity, dt) {
-        if (!entity.isBoss || !entity.alive) return;
+        if (!entity.isBoss) return;
 
         const bossData = entity.bossData;
+
+        // 不死鸟再生检查 - 需要在 alive 检查之前处理
+        if (bossData.canRegenerate && !entity.alive && entity.health <= 0 && bossData.regenCount < bossData.maxRegen) {
+            bossData.regenCount++;
+            entity.health = entity.maxHealth * 0.5;
+            entity.alive = true;
+            this.addDebugLog(`🔥 不死鸟涅槃！再生次数: ${bossData.regenCount}/${bossData.maxRegen}`);
+            if (this.game.onBossRegenerate) {
+                this.game.onBossRegenerate(entity);
+            }
+            // 再生后继续正常更新
+        }
+
+        if (!entity.alive) return;
+
         const healthPercent = entity.health / entity.maxHealth;
 
         // 阶段切换
@@ -365,7 +380,10 @@ export class FireAISystem {
 
         // 更新路径历史
         entity.ai.pathHistory.push({ x: entity.x, y: entity.y, t: Date.now() });
-        if (entity.ai.pathHistory.length > 20) entity.ai.pathHistory.shift();
+        // 限制历史长度
+        while (entity.ai.pathHistory.length > 20) {
+            entity.ai.pathHistory.shift();
+        }
 
         // 更新可视化
         this.updateVisualization(entity);
@@ -386,7 +404,7 @@ export class FireAISystem {
             // 玩家靠近 - 防御或逃跑
             entity.ai.behavior = Math.random() > 0.5 ? 'defend' : 'retreat';
             entity.ai.strategy = 'defensive';
-        } else if (nearbyFlammable.length > 3) {
+        } else if (nearbyFlammable.length >= 3) {
             // 很多可燃物 - 积极蔓延
             entity.ai.behavior = 'spread';
             entity.ai.strategy = 'aggressive';

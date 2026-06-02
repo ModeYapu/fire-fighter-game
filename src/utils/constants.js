@@ -29,11 +29,17 @@ export const WATER_CONFIG = {
 export const FIRE_CONFIG = {
     MAX_INTENSITY: 5,
     MIN_INTENSITY: 1,
-    SPREAD_INTERVAL: 90,        // 蔓延检查间隔（帧数）- 降低蔓延速度
-    SPREAD_PROBABILITY: 0.01,   // 基础蔓延概率 - 降低
-    DAMAGE_RATE: 0.008,         // 降低伤害
-    EXTINGUISH_RATE: 0.15,      // 增加灭火效果
+    SPREAD_INTERVAL: 90,        // 蔓延检查间隔（帧数）
+    SPREAD_PROBABILITY: 0.012,  // 基础蔓延概率
+    DAMAGE_RATE: 0.009,         // 伤害速率
+    EXTINGUISH_RATE: 0.15,      // 灭火效果
     PARTICLE_POOL_SIZE: 300,
+    // 难度相关配置
+    DIFFICULTY_MODIFIERS: [
+        { spreadIntervalMult: 1.5, damageMult: 0.7, wind: 0 },      // 关卡1: 简单
+        { spreadIntervalMult: 1.2, damageMult: 1.0, wind: 2 },      // 关卡2: 中等
+        { spreadIntervalMult: 0.8, damageMult: 1.3, wind: 5 },      // 关卡3: 困难
+    ],
 };
 
 // ==================== 建筑配置 ====================
@@ -167,82 +173,98 @@ export const KEYS = {
 export const LEVEL_DATA = [
     {
         id: 1,
-        name: '教学关卡',
-        description: '学习灭火操作',
+        name: '居民区灭火',
+        description: '扑灭木屋火灾，学习基本操作',
         buildings: [
-            { type: 'WOOD', x: 300, y: 400, initialFire: true },
+            { type: 'WOOD', x: 320, y: 400, initialFire: true },
         ],
         initialFires: [0],
-        initialWater: 1000,
-        time: 45,
+        initialWater: 1200,
+        time: 60,
         targetScore: 500,
         wind: 0,
+        fireSpreadRate: 0.8,  // 慢速蔓延
+        availableFighters: 3,
     },
     {
         id: 2,
-        name: '双建筑',
-        description: '扑灭2栋建筑的火灾',
+        name: '仓库火灾',
+        description: '多建筑同时起火，注意风向',
         buildings: [
-            { type: 'WOOD', x: 120, y: 400, initialFire: true },
-            { type: 'BRICK', x: 450, y: 380, initialFire: true },
+            { type: 'WOOD', x: 100, y: 400, initialFire: true },
+            { type: 'BRICK', x: 320, y: 380, initialFire: true },
+            { type: 'WOOD', x: 540, y: 400, initialFire: false },
         ],
         initialFires: [0, 1],
-        initialWater: 1500,
-        time: 60,
-        targetScore: 1000,
-        wind: 0,
+        initialWater: 1800,
+        time: 75,
+        targetScore: 1200,
+        wind: 3,  // 中等风力
+        fireSpreadRate: 1.0,  // 正常蔓延
+        availableFighters: 2,
     },
     {
         id: 3,
-        name: '高楼救援',
-        description: '拯救高楼火灾',
+        name: '化工厂危机',
+        description: '强风+高楼，保护所有建筑',
         buildings: [
-            { type: 'WOOD', x: 100, y: 400, initialFire: true },
-            { type: 'HIGH_RISE', x: 320, y: 330, initialFire: true },
-            { type: 'WOOD', x: 550, y: 400, initialFire: false },
-        ],
-        initialFires: [0, 1],
-        initialWater: 2000,
-        time: 90,
-        targetScore: 1500,
-        wind: 0,
-    },
-    {
-        id: 4,
-        name: '风力挑战',
-        description: '有风情况下灭火',
-        buildings: [
-            { type: 'BRICK', x: 150, y: 390, initialFire: true },
-            { type: 'HIGH_RISE', x: 380, y: 330, initialFire: false },
-            { type: 'BRICK', x: 550, y: 390, initialFire: true },
-        ],
-        initialFires: [0, 2],
-        initialWater: 2000,
-        time: 90,
-        targetScore: 2000,
-        wind: 3,
-    },
-    {
-        id: 5,
-        name: '终极挑战',
-        description: '扑灭所有火灾',
-        buildings: [
-            { type: 'WOOD', x: 50, y: 400, initialFire: true },
-            { type: 'BRICK', x: 240, y: 390, initialFire: true },
-            { type: 'HIGH_RISE', x: 450, y: 330, initialFire: true },
-            { type: 'WOOD', x: 620, y: 400, initialFire: false },
+            { type: 'WOOD', x: 60, y: 400, initialFire: true },
+            { type: 'BRICK', x: 230, y: 390, initialFire: true },
+            { type: 'HIGH_RISE', x: 420, y: 310, initialFire: true },
+            { type: 'WOOD', x: 600, y: 400, initialFire: false },
         ],
         initialFires: [0, 1, 2],
-        initialWater: 2500,
-        time: 120,
-        targetScore: 3000,
-        wind: 5,
+        initialWater: 2200,
+        time: 90,
+        targetScore: 2000,
+        wind: 6,  // 强风
+        fireSpreadRate: 1.3,  // 快速蔓延
+        availableFighters: 2,
     },
 ];
+
+// ==================== 消防员配置 ====================
+export const FIGHTER_TYPES = {
+    CAPTAIN: {
+        name: '队长',
+        icon: '👨‍🚒',
+        waterBonus: 1.5, // 水量效率加成
+        speedBonus: 1.2, // 移动速度加成
+        cooldownReduction: 0.8, // 冷却减少
+        ability: '强力水柱',
+        abilityDesc: '增加50%射程',
+    },
+    MEMBER: {
+        name: '队员',
+        icon: '👨',
+        waterBonus: 1.0,
+        speedBonus: 1.0,
+        cooldownReduction: 1.0,
+        ability: '快速灭火',
+        abilityDesc: '冷却时间减少20%',
+    },
+};
+
+// ==================== 评分等级 ====================
+export const GRADE_CONFIG = {
+    S: { minScore: 0.9, color: '#FFD700', name: 'S' },
+    A: { minScore: 0.75, color: '#C0C0C0', name: 'A' },
+    B: { minScore: 0.6, color: '#CD7F32', name: 'B' },
+    C: { minScore: 0, color: '#808080', name: 'C' },
+};
+
+// ==================== 关卡编辑器配置 ====================
+export const EDITOR_CONFIG = {
+    GRID_SIZE: 40,
+    GRID_COLS: 20,
+    GRID_ROWS: 15,
+    MAX_BUILDINGS: 15,
+};
 
 // ==================== 本地存储键 ====================
 export const STORAGE_KEYS = {
     PROGRESS: 'fireFighterProgress',
     SETTINGS: 'fireFighterSettings',
     HIGH_SCORES: 'fireFighterHighScores',
+    CUSTOM_LEVELS: 'fireFighterCustomLevels',
 };

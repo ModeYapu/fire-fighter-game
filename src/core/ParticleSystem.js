@@ -90,6 +90,25 @@ export class ParticleSystem {
         particle.type = 'fire';
     }
 
+    // 创建飘散火星（受风力影响）
+    createEmber(x, y, intensity, wind) {
+        const particle = this.getParticle();
+        if (!particle) return;
+
+        // 火星向上飘，受风力影响
+        const windEffect = wind * 2;
+        particle.reset(
+            x + (Math.random() - 0.5) * 30,
+            y - 20,
+            (Math.random() - 0.3) * 2 + windEffect,
+            -2 - Math.random() * 3,
+            1 + Math.random() * 2,
+            Math.random() > 0.5 ? '#ff6b35' : '#ffa500',
+            0.015
+        );
+        particle.type = 'ember';
+    }
+
     // 创建烟雾粒子
     createSmoke(x, y) {
         const particle = this.getParticle();
@@ -129,19 +148,48 @@ export class ParticleSystem {
         }
     }
 
+    // 创建碎石粒子（建筑坍塌）
+    createDebris(x, y) {
+        const particle = this.getParticle();
+        if (!particle) return;
+
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 2 + Math.random() * 4;
+
+        particle.reset(
+            x,
+            y,
+            Math.cos(angle) * speed,
+            Math.sin(angle) * speed - 2,
+            3 + Math.random() * 4,
+            Math.random() > 0.5 ? '#5a4a3a' : '#3a3a3a',
+            0.025
+        );
+        particle.type = 'debris';
+    }
+
     update(game) {
+        const wind = game.physicsEngine?.wind || 0;
+
         this.particles.forEach(particle => {
             if (!particle.active) return;
 
             // 根据类型应用不同的物理
             if (particle.type === 'fire') {
                 particle.vy -= 0.1; // 火焰上升
-                particle.vx += game.physicsEngine.wind * 0.01; // 受风力影响
+                particle.vx += wind * 0.01; // 受风力影响
+            } else if (particle.type === 'ember') {
+                particle.vy -= 0.08; // 火星缓慢上升
+                particle.vx += wind * 0.03; // 更容易受风力影响
+                particle.life -= 0.005; // 火星存在更久
             } else if (particle.type === 'smoke') {
                 particle.vy -= 0.05; // 烟雾缓慢上升
-                particle.vx += game.physicsEngine.wind * 0.02; // 更容易受风力影响
+                particle.vx += wind * 0.02; // 更容易受风力影响
             } else if (particle.type === 'splash') {
                 particle.vy += PHYSICS.GRAVITY * 0.5; // 水花受重力
+            } else if (particle.type === 'debris') {
+                particle.vy += PHYSICS.GRAVITY * 0.8; // 碎石受重力
+                particle.vx *= 0.98; // 空气阻力
             }
 
             particle.update();

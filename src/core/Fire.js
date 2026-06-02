@@ -37,6 +37,19 @@ export class Fire {
             game.particles.createFire(this.x, this.y, this.intensity);
         }
 
+        // 生成飘散火星（根据强度生成更多）
+        const emberCount = Math.floor(this.intensity * 1.5);
+        for (let i = 0; i < emberCount; i++) {
+            if (Math.random() < 0.3) {
+                game.particles.createEmber(
+                    this.x + (Math.random() - 0.5) * 30,
+                    this.y - 10,
+                    this.intensity,
+                    game.physicsEngine?.wind || 0
+                );
+            }
+        }
+
         // 生成烟雾粒子
         if (Math.random() < 0.5) {
             game.particles.createSmoke(this.x, this.y - 30);
@@ -52,6 +65,9 @@ export class Fire {
             return;
         }
 
+        // 获取风力（正数向右，负数向左）- 优先使用FireSystem的风
+        const wind = game.fireSystem?.windDirection || game.physicsEngine?.wind || 0;
+
         const spreadDistance = this.radius + 80;
         const spreadDistanceSquared = spreadDistance * spreadDistance;
 
@@ -63,14 +79,24 @@ export class Fire {
             const hasFire = game.fires.some(f => f && f.building === building && f.intensity > 0);
             if (hasFire) return;
 
-            // 计算距离（使用平方距离避免sqrt）
+            // 计算距离和方向
             const dx = building.x - this.building.x;
             const dy = building.y - this.building.y;
             const distanceSquared = dx * dx + dy * dy;
 
             // 如果距离足够近，有概率点燃
             if (distanceSquared < spreadDistanceSquared) {
-                const probability = FIRE_CONFIG.SPREAD_PROBABILITY * this.intensity * (1 - (building.fireResistance || 0));
+                let probability = FIRE_CONFIG.SPREAD_PROBABILITY * this.intensity * (1 - (building.fireResistance || 0));
+
+                // 风向影响：顺风方向蔓延概率增加，逆风方向减少
+                if (dx !== 0) {
+                    const windFactor = (dx / Math.abs(dx)) * wind;
+                    // 顺风(windFactor > 0)增加概率，逆风减少
+                    probability *= (1 + windFactor * 0.15);
+                }
+
+                // 风力越大，整体蔓延越快
+                probability *= (1 + Math.abs(wind) * 0.05);
 
                 if (Math.random() < probability) {
                     try {
@@ -95,6 +121,22 @@ export class Fire {
 export class FireSystem {
     constructor() {
         this.fires = [];
+        this.windDirection = 0; // -10到10，负数向左，正数向右，0为无风
+        this.windVariationTimer = 0;
+    }
+
+    setWind(direction) {
+        this.windDirection = Math.max(-10, Math.min(10, direction));
+    }
+
+    updateWind(deltaTime) {
+        // 风向自然变化
+        this.windVariationTimer += deltaTime;
+        if (this.windVariationTimer >= 5) { // 每5秒变化一次
+            this.windVariationTimer = 0;
+            const variation = (Math.random() - 0.5) * 2; // -1到1
+            this.windDirection = Math.max(-10, Math.min(10, this.windDirection + variation));
+        }
     }
 
     ignite(building) {
@@ -112,6 +154,11 @@ export class FireSystem {
     }
 
     update(game) {
+        // 更新风向
+        if (game.state && game.state !== 'menu') {
+            this.updateWind(1/60); // 假设60fps
+        }
+
         this.fires.forEach(fire => {
             if (fire.intensity > 0) {
                 fire.update(game);

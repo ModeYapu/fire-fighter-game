@@ -179,6 +179,14 @@ export class UIManager {
         this.hideAllMenus();
         this.elements.mainMenu.style.display = 'flex';
         this.game.state = GAME_STATE.MENU;
+
+        // 显示教程（如果未完成）
+        if (this.game.tutorialSystem && !this.game.tutorialSystem.completed) {
+            // 延迟一点显示，让主菜单先显示
+            setTimeout(() => {
+                this.game.tutorialSystem.showTutorial();
+            }, 300);
+        }
     }
 
     showLevelMenu() {
@@ -238,6 +246,9 @@ export class UIManager {
             return;
         }
         this.lastUpdateTime = now;
+
+        // 更新风向指示器
+        this.updateWindIndicator();
 
         // 优化：只有当值真正改变时才更新DOM
         const formattedTime = this.formatTime(time);
@@ -301,6 +312,66 @@ export class UIManager {
         this.elements.prepareTimer.textContent = Math.ceil(time);
     }
 
+    updateWindIndicator() {
+        const windIndicator = document.getElementById('wind-indicator');
+        if (!windIndicator || !this.game || !this.game.fireSystem) return;
+
+        const wind = this.game.fireSystem.windDirection || 0;
+        const windArrow = windIndicator.querySelector('.wind-arrow');
+        const windText = windIndicator.querySelector('.wind-text');
+
+        if (windArrow) {
+            const rotation = wind * 15; // 每单位风力旋转15度
+            windArrow.style.transform = `rotate(${rotation}deg)`;
+        }
+
+        if (windText) {
+            const windLevel = Math.abs(wind);
+            let windDesc = '无风';
+            if (windLevel > 7) windDesc = '强风';
+            else if (windLevel > 4) windDesc = '中风';
+            else if (windLevel > 1) windDesc = '微风';
+
+            const windDir = wind > 0 ? '→' : wind < 0 ? '←' : '•';
+            windText.textContent = `${windDesc} ${windDir}`;
+        }
+    }
+
+    renderWindArrow(ctx, x, y, wind) {
+        // 绘制风向箭头
+        ctx.save();
+        ctx.translate(x, y);
+
+        const windLevel = Math.abs(wind);
+        const arrowLength = 20 + windLevel * 3;
+        const rotation = wind * 15;
+        ctx.rotate(rotation * Math.PI / 180);
+
+        // 箭头颜色根据风力强度
+        const arrowColor = windLevel > 7 ? '#e74c3c' :
+                          windLevel > 4 ? '#f39c12' :
+                          windLevel > 1 ? '#3498db' : '#95a5a6';
+
+        ctx.fillStyle = arrowColor;
+        ctx.beginPath();
+        ctx.moveTo(arrowLength, 0);
+        ctx.lineTo(-5, -8);
+        ctx.lineTo(-5, 8);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+
+        // 风力文字
+        ctx.font = 'bold 12px Arial';
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'center';
+        const windDesc = windLevel > 7 ? '强风' :
+                        windLevel > 4 ? '中风' :
+                        windLevel > 1 ? '微风' : '无风';
+        ctx.fillText(windDesc, x, y + 25);
+    }
+
     showResult(win, score, water, buildings) {
         this.hideGameUI();
         this.elements.resultMenu.style.display = 'flex';
@@ -319,6 +390,38 @@ export class UIManager {
 
         // 保存进度
         if (win) {
+            this.saveProgress(this.game.currentLevel, stars, score);
+        }
+    }
+
+    showResultWithGrade(win, score, water, buildings, scoreDetails) {
+        this.hideGameUI();
+        this.elements.resultMenu.style.display = 'flex';
+
+        const title = document.getElementById('result-title');
+        title.textContent = win ? '胜利!' : '失败!';
+        title.className = `result-title ${win ? 'win' : 'lose'}`;
+
+        document.getElementById('result-score').textContent = score;
+        document.getElementById('result-water').textContent = water;
+        document.getElementById('result-buildings').textContent = buildings;
+
+        // Round 4: 显示评分等级而非星级
+        if (scoreDetails && scoreDetails.grade) {
+            const gradeElement = document.getElementById('result-stars');
+            if (gradeElement) {
+                const gradeConfig = this.game.scoringSystem.getGradeConfig(scoreDetails.grade);
+                gradeElement.innerHTML = `<span style="color: ${gradeConfig.color}; font-size: 32px;">${gradeConfig.name}</span>`;
+            }
+        } else {
+            // Fallback to stars
+            const stars = this.calculateStars(score, water, buildings);
+            document.getElementById('result-stars').textContent = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);
+        }
+
+        // 保存进度
+        if (win) {
+            const stars = this.calculateStars(score, water, buildings);
             this.saveProgress(this.game.currentLevel, stars, score);
         }
     }
